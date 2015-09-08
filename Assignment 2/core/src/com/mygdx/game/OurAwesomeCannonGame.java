@@ -12,7 +12,7 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 	
 	private FloatBuffer vertexBuffer;
 
-	private FloatBuffer modelMatrix;
+	private FloatBuffer modelMatrixBuffer;
 	private FloatBuffer projectionMatrix;
 
 	private int renderingProgramID;
@@ -25,6 +25,8 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 	private int projectionMatrixLoc;
 
 	private int colorLoc;
+	
+	private ModelMatrix modelMatrix;
 
 	@Override
 	public void create () {
@@ -81,11 +83,11 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 		mm[2] = 0.0f; mm[6] = 0.0f; mm[10] = 1.0f; mm[14] = 0.0f;
 		mm[3] = 0.0f; mm[7] = 0.0f; mm[11] = 0.0f; mm[15] = 1.0f;
 
-		modelMatrix = BufferUtils.newFloatBuffer(16);
-		modelMatrix.put(mm);
-		modelMatrix.rewind();
+		modelMatrixBuffer = BufferUtils.newFloatBuffer(16);
+		modelMatrixBuffer.put(mm);
+		modelMatrixBuffer.rewind();
 
-		Gdx.gl.glUniformMatrix4fv(modelMatrixLoc, 1, false, modelMatrix);
+		Gdx.gl.glUniformMatrix4fv(modelMatrixLoc, 1, false, modelMatrixBuffer);
 
 		//COLOR IS SET HERE
 		Gdx.gl.glUniform4f(colorLoc, 0.7f, 0.2f, 0, 1);
@@ -111,37 +113,37 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 
 	private void clearModelMatrix()
 	{
-		modelMatrix.put(0, 1.0f);
-		modelMatrix.put(1, 0.0f);
-		modelMatrix.put(2, 0.0f);
-		modelMatrix.put(3, 0.0f);
-		modelMatrix.put(4, 0.0f);
-		modelMatrix.put(5, 1.0f);
-		modelMatrix.put(6, 0.0f);
-		modelMatrix.put(7, 0.0f);
-		modelMatrix.put(8, 0.0f);
-		modelMatrix.put(9, 0.0f);
-		modelMatrix.put(10, 1.0f);
-		modelMatrix.put(11, 0.0f);
-		modelMatrix.put(12, 0.0f);
-		modelMatrix.put(13, 0.0f);
-		modelMatrix.put(14, 0.0f);
-		modelMatrix.put(15, 1.0f);
+		modelMatrixBuffer.put(0, 1.0f);
+		modelMatrixBuffer.put(1, 0.0f);
+		modelMatrixBuffer.put(2, 0.0f);
+		modelMatrixBuffer.put(3, 0.0f);
+		modelMatrixBuffer.put(4, 0.0f);
+		modelMatrixBuffer.put(5, 1.0f);
+		modelMatrixBuffer.put(6, 0.0f);
+		modelMatrixBuffer.put(7, 0.0f);
+		modelMatrixBuffer.put(8, 0.0f);
+		modelMatrixBuffer.put(9, 0.0f);
+		modelMatrixBuffer.put(10, 1.0f);
+		modelMatrixBuffer.put(11, 0.0f);
+		modelMatrixBuffer.put(12, 0.0f);
+		modelMatrixBuffer.put(13, 0.0f);
+		modelMatrixBuffer.put(14, 0.0f);
+		modelMatrixBuffer.put(15, 1.0f);
 
-		Gdx.gl.glUniformMatrix4fv(modelMatrixLoc, 1, false, modelMatrix);
+		Gdx.gl.glUniformMatrix4fv(modelMatrixLoc, 1, false, modelMatrixBuffer);
 	}
 	private void setModelMatrixTranslation(float xTranslate, float yTranslate)
 	{
-		modelMatrix.put(12, xTranslate);
-		modelMatrix.put(13, yTranslate);
+		modelMatrixBuffer.put(12, xTranslate);
+		modelMatrixBuffer.put(13, yTranslate);
 
-		Gdx.gl.glUniformMatrix4fv(modelMatrixLoc, 1, false, modelMatrix);
+		Gdx.gl.glUniformMatrix4fv(modelMatrixLoc, 1, false, modelMatrixBuffer);
 	}
 	private void setModelMatrixScale(float xScale, float yScale)
 	{
-		modelMatrix.put(0, xScale);
-		modelMatrix.put(5, yScale);
+		modelMatrixBuffer.put(0, xScale);
+		modelMatrixBuffer.put(5, yScale);
 
-		Gdx.gl.glUniformMatrix4fv(modelMatrixLoc, 1, false, modelMatrix);
+		Gdx.gl.glUniformMatrix4fv(modelMatrixLoc, 1, false, modelMatrixBuffer);
 	}
 }
