@@ -27,6 +27,11 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 	private int colorLoc;
 	
 	private ModelMatrix modelMatrix;
+	
+	private float xPos = 0.0f;
+	private float yPos = 0.0f;
+	
+	private float angle = 0.0f;
 
 	@Override
 	public void create () {
@@ -104,10 +109,19 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 		vertexBuffer.rewind();
 
 	}
+	
+	private void update() {
+		float deltaTime = Gdx.graphics.getDeltaTime();
+	}
+	
+	private void display() {
+		
+	}
 
 	@Override
 	public void render () {
-
+		update();
+		display();
 	}
 
 

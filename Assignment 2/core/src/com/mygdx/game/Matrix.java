@@ -1,16 +1,20 @@
 package com.mygdx.game;
 
 import java.nio.FloatBuffer;
+import java.util.Stack;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.BufferUtils;
 
 
 public class Matrix {
+	
 	FloatBuffer matrix;
+	Stack<FloatBuffer> matrixStack;
 	
 	public Matrix () {
 		matrix = BufferUtils.newFloatBuffer(16);
+		matrixStack = new Stack<FloatBuffer>();
 	}
 	
 	public void loadIdentityMatrix() {
