@@ -4,13 +4,14 @@ import com.badlogic.gdx.Gdx;
 
 
 public class CannonBall {
-	Point3D position;
+	public Point3D position;
 	
 	public Vector3D velocity;
 	
 	public ModelMatrix orientation;
 	
 	public CannonBall() {
+		position = new Point3D(0, 0, 0);
 		velocity = new Vector3D(0, 0, 0);
 		orientation = new ModelMatrix();
 	}
@@ -32,6 +33,9 @@ public class CannonBall {
 	}
 	
 	public void update(float deltaTime) {
+		position.x += velocity.x;
+		position.y += velocity.y;
+		
 		orientation.matrix.put(12, orientation.matrix.get(12) + velocity.x * deltaTime);
 		orientation.matrix.put(13, orientation.matrix.get(13) + velocity.y * deltaTime);
 	}

@@ -47,6 +47,7 @@ public class Cannon {
 		ModelMatrix.main.popMatrix();
 
 		ModelMatrix.main.popMatrix();
+		
 		cannonBall.display(colorLoc);
 	}
 	
@@ -70,10 +71,10 @@ public class Cannon {
 		cannonBall.orientation = new ModelMatrix();
 		cannonBall.orientation.loadIdentityMatrix();
 		
+		cannonBall.position.x = position.x;
+		cannonBall.position.y = position.y;
 		cannonBall.orientation.addTransformation(orientation.matrix);
 		cannonBall.velocity = cannonBall.orientation.getB();
 		cannonBall.velocity.scale(300);
-		//cannonBall.velocity.x = 500;
-		//cannonBall.velocity.y = 500;
 	}
 }
