@@ -90,7 +90,8 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 	}
 	
 	private void update() {
-		//float deltaTime = Gdx.graphics.getDeltaTime();
+		float deltaTime = Gdx.graphics.getDeltaTime();
+		cannon.input(deltaTime);
 	}
 	
 	private void display() {
