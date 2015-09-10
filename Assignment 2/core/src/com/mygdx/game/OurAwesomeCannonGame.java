@@ -32,6 +32,8 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 	private float yPos = 0.0f;
 	
 	private float angle = 0.0f;
+	
+	private Cannon cannon;
 
 	@Override
 	public void create () {
@@ -107,6 +109,8 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 		vertexBuffer = BufferUtils.newFloatBuffer(8);
 		vertexBuffer.put(array);
 		vertexBuffer.rewind();
+		
+		cannon = new Cannon();
 
 	}
 	
@@ -115,7 +119,7 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 	}
 	
 	private void display() {
-		
+		cannon.display();
 	}
 
 	@Override
