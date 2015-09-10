@@ -10,7 +10,6 @@ import com.badlogic.gdx.utils.BufferUtils;
 
 public class OurAwesomeCannonGame extends ApplicationAdapter {
 
-	//private FloatBuffer modelMatrixBuffer;
 	private FloatBuffer projectionMatrix;
 
 	private int renderingProgramID;
@@ -84,18 +83,19 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 		ModelMatrix.main.setShaderMatrix(modelMatrixLoc);
 		
 		Circle.create(positionLoc);
+		Rectangle.create(positionLoc);
 		
 		cannon = new Cannon();
 
 	}
 	
 	private void update() {
-		float deltaTime = Gdx.graphics.getDeltaTime();
+		//float deltaTime = Gdx.graphics.getDeltaTime();
 	}
 	
 	private void display() {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		cannon.display();
+		cannon.display(colorLoc);
 	}
 
 	@Override
