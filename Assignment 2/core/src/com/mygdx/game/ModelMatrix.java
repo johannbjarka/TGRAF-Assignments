@@ -6,6 +6,8 @@ import com.badlogic.gdx.utils.BufferUtils;
 
 public class ModelMatrix extends Matrix {
 	
+	public static ModelMatrix main;
+	
 	float[] M2;
 	public ModelMatrix() {
 		super();
