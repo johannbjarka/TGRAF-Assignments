@@ -14,6 +14,22 @@ public class ModelMatrix extends Matrix {
 		M2 = new float[16];
 	}
 	
+	public Vector3D getA() {
+		return new Vector3D(matrix.get(0), matrix.get(1), matrix.get(2));
+	}
+	
+	public Vector3D getB() {
+		return new Vector3D(matrix.get(4), matrix.get(5), matrix.get(6));
+	}
+	
+	public Vector3D getC() {
+		return new Vector3D(matrix.get(8), matrix.get(9), matrix.get(10));
+	}
+	
+	public Point3D getOrigin() {
+		return new Point3D(matrix.get(12), matrix.get(13), matrix.get(14));
+	}
+	
 	public void addTranslation(float Tx, float Ty, float Tz) {
 		matrix.put(12, matrix.get(0) * Tx + matrix.get(4) * Ty + matrix.get(8) * Tz + matrix.get(12));
 		matrix.put(13, matrix.get(1) * Tx + matrix.get(5) * Ty + matrix.get(9) * Tz + matrix.get(13));

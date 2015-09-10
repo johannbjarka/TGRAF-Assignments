@@ -4,9 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 
 public class Cannon {
-	Point3D position;
+	public Point3D position;
 	
 	ModelMatrix orientation;
+	
+	CannonBall cannonBall;
 	
 	public Cannon() {
 		// Set the position of the cannon
@@ -17,6 +19,8 @@ public class Cannon {
 		orientation = new ModelMatrix();
 		orientation.loadIdentityMatrix();
 		orientation.addTranslation(position.x, position.y, 0);
+		
+		cannonBall = new CannonBall();
 	}
 	
 	public void display(int colorLoc) {
@@ -42,11 +46,13 @@ public class Cannon {
 		Rectangle.drawSolidSquare();
 		ModelMatrix.main.popMatrix();
 		
+		cannonBall.display(colorLoc);
+		
 		ModelMatrix.main.popMatrix();
 	}
 	
 	public void update(float deltaTime) {
-		
+		cannonBall.update(deltaTime);
 	}
 	
 	public void input(float deltaTime) {
@@ -56,5 +62,18 @@ public class Cannon {
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
 			orientation.addRotationZ(-180.0f * deltaTime);
 		}
+		if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+			shoot();
+		}
+	}
+	
+	public void shoot() {
+		cannonBall.orientation = new ModelMatrix();
+		cannonBall.orientation.loadIdentityMatrix();
+		
+		cannonBall.orientation.addTransformation(orientation.matrix);
+		cannonBall.velocity = cannonBall.orientation.getB();
+		cannonBall.velocity.x = 10;
+		cannonBall.velocity.y = 10;
 	}
 }
