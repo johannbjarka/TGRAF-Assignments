@@ -21,6 +21,8 @@ public class Cannon {
 		orientation.addTranslation(position.x, position.y, 0);
 		
 		cannonBall = new CannonBall();
+		cannonBall.position.x = position.x;
+		cannonBall.position.y = position.y;
 	}
 	
 	public void display(int colorLoc) {
@@ -30,7 +32,6 @@ public class Cannon {
 		
 		// Draw the circle base
 		ModelMatrix.main.pushMatrix();
-		//ModelMatrix.main.addTranslation(position.x, position.y, 1);
 		ModelMatrix.main.addScale(20, 20, 1);
 		Gdx.gl.glUniform4f(colorLoc, 0, 0, 0, 1);
 		ModelMatrix.main.setShaderMatrix();
@@ -71,8 +72,6 @@ public class Cannon {
 		cannonBall.orientation = new ModelMatrix();
 		cannonBall.orientation.loadIdentityMatrix();
 		
-		cannonBall.position.x = position.x;
-		cannonBall.position.y = position.y;
 		cannonBall.orientation.addTransformation(orientation.matrix);
 		cannonBall.velocity = cannonBall.orientation.getB();
 		cannonBall.velocity.scale(300);
