@@ -117,6 +117,9 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 		n.x = -(line.C.y - line.B.y);
 		n.y = line.C.x - line.B.x; 
 		
+		System.out.println(cb.position.x);
+		System.out.println(cb.position.y);
+		
 		float t_hit = (n.x * (line.B.x - cb.position.x) + n.y * (line.B.y - cb.position.y))
 				/ (n.x * cb.velocity.x + n.y * cb.velocity.y);
 		

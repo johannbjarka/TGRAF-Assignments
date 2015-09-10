@@ -33,8 +33,8 @@ public class CannonBall {
 	}
 	
 	public void update(float deltaTime) {
-		position.x += velocity.x;
-		position.y += velocity.y;
+		position.x += velocity.x * deltaTime;
+		position.y += velocity.y * deltaTime;
 		
 		orientation.matrix.put(12, orientation.matrix.get(12) + velocity.x * deltaTime);
 		orientation.matrix.put(13, orientation.matrix.get(13) + velocity.y * deltaTime);
