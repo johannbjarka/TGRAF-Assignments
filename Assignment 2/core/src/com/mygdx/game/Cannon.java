@@ -8,7 +8,7 @@ public class Cannon {
 	
 	ModelMatrix orientation;
 	
-	CannonBall cannonBall;
+	public CannonBall cannonBall;
 	
 	public Cannon() {
 		// Set the position of the cannon

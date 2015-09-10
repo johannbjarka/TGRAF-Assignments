@@ -24,6 +24,8 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 	private int colorLoc;
 	
 	private Cannon cannon;
+	
+	private Line theLine;
 
 	@Override
 	public void create () {
@@ -84,20 +86,66 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 		
 		Circle.create(positionLoc);
 		Rectangle.create(positionLoc);
+		theLine = new Line();
+		theLine.create(positionLoc, new Point3D(250, 400,1), new Point3D(750, 400,1));
 		
 		cannon = new Cannon();
-
 	}
 	
 	private void update() {
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		cannon.input(deltaTime);
 		cannon.update(deltaTime);
+		Collide(theLine, cannon.cannonBall, deltaTime);
 	}
 	
 	private void display() {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		cannon.display(colorLoc);
+		
+		ModelMatrix.main.pushMatrix();
+		
+		Gdx.gl.glUniform4f(colorLoc, 0, 0, 0, 1);
+		ModelMatrix.main.setShaderMatrix();
+		theLine.drawSolidLine();
+		
+		ModelMatrix.main.popMatrix();
+	}
+	
+	private void Collide(Line line, CannonBall cb, float deltaTime) {
+		Vector3D n = new Vector3D(0, 0, 0);
+		n.x = -(line.C.y - line.B.y);
+		n.y = line.C.x - line.B.x; 
+		
+		float t_hit = (n.x * (line.B.x - cb.position.x) + n.y * (line.B.y - cb.position.y))
+				/ (n.x * cb.velocity.x + n.y * cb.velocity.y);
+		
+		System.out.println(t_hit);
+		
+		if(t_hit <= deltaTime && t_hit > 0) {
+			System.out.println("first if");
+			Point3D p_hit = new Point3D(0, 0, 0);
+			
+			p_hit.x = cb.position.x + cb.velocity.x * t_hit;
+			p_hit.y = cb.position.y * cb.velocity.y * t_hit;
+			
+			if((p_hit.x >= line.B.x && p_hit.x <= line.C.x) || (p_hit.x >= line.C.x && p_hit.x <= line.B.x)) {
+				System.out.println("collide");
+				Vector3D reflectedMotion = new Vector3D(0, 0, 0);
+				
+				float lengthOfN = (float) Math.sqrt(n.x * n.x + n.y * n.y);
+				n.x = n.x/lengthOfN;
+				n.y = n.y/lengthOfN;
+				
+				float AdotN = cb.velocity.x * n.x + cb.velocity.y * n.y;
+				reflectedMotion.x = cb.velocity.x - 2 * AdotN * n.x;
+				reflectedMotion.y = cb.velocity.y - 2 * AdotN * n.y;
+				
+				cb.velocity = reflectedMotion;
+			}
+		}
+		
+		
 	}
 
 	@Override
