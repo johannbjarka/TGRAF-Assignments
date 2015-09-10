@@ -22,7 +22,7 @@ public class CannonBall {
 		// Draw the circle base
 		ModelMatrix.main.pushMatrix();
 		//ModelMatrix.main.addTranslation(position.x, position.y, 1);
-		ModelMatrix.main.addScale(15, 15, 1);
+		ModelMatrix.main.addScale(10, 10, 1);
 		Gdx.gl.glUniform4f(colorLoc, 0, 0, 0, 1);
 		ModelMatrix.main.setShaderMatrix();
 		Circle.drawSolidCircle();

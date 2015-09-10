@@ -45,10 +45,9 @@ public class Cannon {
 		ModelMatrix.main.setShaderMatrix();
 		Rectangle.drawSolidSquare();
 		ModelMatrix.main.popMatrix();
-		
-		cannonBall.display(colorLoc);
-		
+
 		ModelMatrix.main.popMatrix();
+		cannonBall.display(colorLoc);
 	}
 	
 	public void update(float deltaTime) {
@@ -73,7 +72,8 @@ public class Cannon {
 		
 		cannonBall.orientation.addTransformation(orientation.matrix);
 		cannonBall.velocity = cannonBall.orientation.getB();
-		cannonBall.velocity.x = 10;
-		cannonBall.velocity.y = 10;
+		cannonBall.velocity.scale(300);
+		//cannonBall.velocity.x = 500;
+		//cannonBall.velocity.y = 500;
 	}
 }

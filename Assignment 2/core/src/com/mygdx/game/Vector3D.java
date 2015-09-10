@@ -11,4 +11,9 @@ public class Vector3D {
 		this.z = z;
 	}
 	
+	public void scale(float factor) {
+		this.x = factor * x;
+		this.y = factor * y;
+		this.z = factor * z;
+	}
 }
