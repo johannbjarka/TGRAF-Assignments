@@ -28,6 +28,7 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 	private Cannon cannon;
 	
 	private ArrayList<Line> lines;
+	private ArrayList<Line> tempLines;
 	
 	private Point3D start;
 	private Point3D end;
@@ -93,6 +94,7 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 		Rectangle.create(positionLoc);
 		
 		lines = new ArrayList<Line>();
+		tempLines = new ArrayList<Line>();
 		
 		cannon = new Cannon();
 		
@@ -125,6 +127,13 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 			Gdx.gl.glUniform4f(colorLoc, 0, 0, 0, 1);
 			line.drawSolidLine();
 		}
+		
+		ModelMatrix.main.setShaderMatrix();
+		for(Line line : tempLines) {
+			Gdx.gl.glUniform4f(colorLoc, 0, 0, 0, 1);
+			line.drawSolidLine();
+		}
+		
 	}
 	
 	private void Collide(Line line, CannonBall cb, float deltaTime) {
@@ -187,20 +196,27 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		// Create the start point
-		Line newLine = new Line(positionLoc, new Point3D(screenX, Gdx.graphics.getHeight() - screenY, 1), new Point3D(750, 400,1));
-		lines.add(newLine);
+		start = new Point3D(screenX, Gdx.graphics.getHeight() - screenY, 1);
 		return false;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		// TODO Auto-generated method stub
+		end = new Point3D(screenX, Gdx.graphics.getHeight() - screenY, 1);
+		Line newLine = new Line(positionLoc, start, end);
+		lines.add(newLine);
 		return false;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
+		tempLines.clear();
+		
+		Point3D tempEnd = new Point3D(screenX, Gdx.graphics.getHeight() - screenY, 1);
+		Line tempLine = new Line(positionLoc, start, tempEnd);
+		
+		tempLines.add(tempLine);
 		return false;
 	}
 
