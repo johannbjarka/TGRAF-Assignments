@@ -23,11 +23,6 @@ class Rectangle {
 		Point3D point3 = new Point3D(end.x, end.y, 1);
 		Point3D point4 = new Point3D(end.x, start.y, 1);
 		
-		System.out.println("point1: " + point1.x + " " + point1.y);
-		System.out.println("point2: " + point2.x + " " + point2.y);
-		System.out.println("point3: " + point3.x + " " + point3.y);
-		System.out.println("point4: " + point4.x + " " + point4.y);
-		
 		sides.add(new Line(vertexPointer, point1, point2));
 		sides.add(new Line(vertexPointer, point2, point3));
 		sides.add(new Line(vertexPointer, point3, point4));
