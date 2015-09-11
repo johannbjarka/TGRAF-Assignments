@@ -11,11 +11,11 @@ public class Line {
 	public Point3D B;
 	public Point3D C;
 	
-	private static FloatBuffer vertexBuffer;
-	private static int vertexPointer;
+	private FloatBuffer vertexBuffer;
+	private int vertexPointer;
 	
-	public void create(int vertexPointer, Point3D start, Point3D end) {
-		Line.vertexPointer = vertexPointer;
+	public Line(int vertexPointer, Point3D start, Point3D end) {
+		this.vertexPointer = vertexPointer;
 
 		B = start;
 		C = end;

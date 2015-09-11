@@ -2,7 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 
 import java.nio.FloatBuffer;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.utils.BufferUtils;
 
-public class OurAwesomeCannonGame extends ApplicationAdapter {
+public class OurAwesomeCannonGame extends ApplicationAdapter implements InputProcessor {
 
 	private FloatBuffer projectionMatrix;
 
@@ -28,6 +28,9 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 	private Cannon cannon;
 	
 	private ArrayList<Line> lines;
+	
+	private Point3D start;
+	private Point3D end;
 
 	@Override
 	public void create () {
@@ -91,15 +94,16 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 		
 		lines = new ArrayList<Line>();
 		
-		
-		
 		cannon = new Cannon();
+		
+		Gdx.input.setInputProcessor(this);
 	}
 	
 	private void update() {
 		float deltaTime = Gdx.graphics.getDeltaTime();
-		cannon.input(deltaTime);
+
 		cannon.update(deltaTime);
+		
 		// Check for collisions
 		for(Line line : lines) {
 			Collide(line, cannon.cannonBall, deltaTime);
@@ -108,27 +112,19 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 	}
 	
 	private void input() {
-		if(Gdx.input.justTouched()){
-			System.out.println("mousedown");
-			Line newLine = new Line();
-			newLine.create(positionLoc, new Point3D(250, 500,1), new Point3D(750, 400,1));
-			lines.add(newLine);
-		}
+		float deltaTime = Gdx.graphics.getDeltaTime();
+		cannon.input(deltaTime);
 	}
 	
 	private void display() {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		cannon.display(colorLoc);
-		
-		
+
+		ModelMatrix.main.setShaderMatrix();
 		for(Line line : lines) {
-			ModelMatrix.main.pushMatrix();
 			Gdx.gl.glUniform4f(colorLoc, 0, 0, 0, 1);
-			ModelMatrix.main.setShaderMatrix();
 			line.drawSolidLine();
-			ModelMatrix.main.popMatrix();
 		}
-	
 	}
 	
 	private void Collide(Line line, CannonBall cb, float deltaTime) {
@@ -168,5 +164,55 @@ public class OurAwesomeCannonGame extends ApplicationAdapter {
 		update();
 		display();
 		input();
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		// Create the start point
+		Line newLine = new Line(positionLoc, new Point3D(screenX, Gdx.graphics.getHeight() - screenY, 1), new Point3D(750, 400,1));
+		lines.add(newLine);
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
