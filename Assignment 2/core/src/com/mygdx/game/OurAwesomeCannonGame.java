@@ -124,6 +124,12 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 			Collide(line, cannon.cannonBall, deltaTime);
 		}
 		
+		for(Rectangle rectangle : rectangles) {
+			for(Line side : rectangle.sides) {
+				Collide(side, cannon.cannonBall, deltaTime);
+			}
+		}
+		
 	}
 	
 	private void input() {
@@ -157,8 +163,7 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 		for(Rectangle rectangle : tempRectangles) {
 			Gdx.gl.glUniform4f(colorLoc, 0, 0, 0, 1);
 			rectangle.drawOutlineSquare();
-		}
-		
+		}	
 	}
 	
 	private void Collide(Line line, CannonBall cb, float deltaTime) {
