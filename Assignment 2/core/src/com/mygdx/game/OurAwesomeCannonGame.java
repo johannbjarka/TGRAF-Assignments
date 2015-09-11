@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.GL20;
 
 import java.nio.FloatBuffer;
@@ -27,11 +28,17 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 	
 	private Cannon cannon;
 	
+	private ArrayList<Rectangle> rectangles;
+	private ArrayList<Rectangle> tempRectangles;
+	
 	private ArrayList<Line> lines;
 	private ArrayList<Line> tempLines;
 	
-	private Point3D start;
-	private Point3D end;
+	private Point3D startPoint;
+	private Point3D endPoint;
+	
+	private boolean isDrawingLine;
+	private boolean isDrawingRect;
 
 	@Override
 	public void create () {
@@ -91,12 +98,18 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 		ModelMatrix.main.setShaderMatrix(modelMatrixLoc);
 		
 		Circle.create(positionLoc);
-		Rectangle.create(positionLoc);
+		//Rectangle.create(positionLoc);
 		
 		lines = new ArrayList<Line>();
 		tempLines = new ArrayList<Line>();
 		
-		cannon = new Cannon();
+		rectangles = new ArrayList<Rectangle>();
+		tempRectangles = new ArrayList<Rectangle>();
+		
+		isDrawingLine = false;
+		isDrawingRect = false;
+		
+		cannon = new Cannon(positionLoc);
 		
 		Gdx.input.setInputProcessor(this);
 	}
@@ -132,6 +145,18 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 		for(Line line : tempLines) {
 			Gdx.gl.glUniform4f(colorLoc, 0, 0, 0, 1);
 			line.drawSolidLine();
+		}
+		
+		ModelMatrix.main.setShaderMatrix();
+		for(Rectangle rectangle : rectangles) {
+			Gdx.gl.glUniform4f(colorLoc, 0, 0, 0, 1);
+			rectangle.drawOutlineSquare();
+		}
+		
+		ModelMatrix.main.setShaderMatrix();
+		for(Rectangle rectangle : tempRectangles) {
+			Gdx.gl.glUniform4f(colorLoc, 0, 0, 0, 1);
+			rectangle.drawOutlineSquare();
 		}
 		
 	}
@@ -196,27 +221,55 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		// Create the start point
-		start = new Point3D(screenX, Gdx.graphics.getHeight() - screenY, 1);
+		if(button == Buttons.RIGHT) {
+			isDrawingLine = true;
+		} else if(button == Buttons.LEFT) {
+			isDrawingRect = true;
+		}
+		startPoint = new Point3D(screenX, Gdx.graphics.getHeight() - screenY, 1);
 		return false;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		end = new Point3D(screenX, Gdx.graphics.getHeight() - screenY, 1);
-		Line newLine = new Line(positionLoc, start, end);
-		lines.add(newLine);
+		// Save the end point
+		endPoint = new Point3D(screenX, Gdx.graphics.getHeight() - screenY, 1);
+		
+		if(button == Buttons.RIGHT) {
+			// Save the final line in the final line array
+			isDrawingLine = false;
+			Line newLine = new Line(positionLoc, startPoint, endPoint);
+			lines.add(newLine);
+		} else if(button == Buttons.LEFT) {
+			// Save the final rectangle in the final rectangle array
+			isDrawingRect = false;
+			Rectangle newRectangle = new Rectangle(positionLoc, startPoint, endPoint);
+			rectangles.add(newRectangle);
+		}
 		return false;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		tempLines.clear();
-		
+		// Save the temporary end point
 		Point3D tempEnd = new Point3D(screenX, Gdx.graphics.getHeight() - screenY, 1);
-		Line tempLine = new Line(positionLoc, start, tempEnd);
 		
-		tempLines.add(tempLine);
+		if(isDrawingLine) {
+			// Draw the lines
+			tempLines.clear();
+			
+			Line tempLine = new Line(positionLoc, startPoint, tempEnd);
+			
+			tempLines.add(tempLine);
+		} else if(isDrawingRect) {
+			// Draw the rectangle
+			tempRectangles.clear();
+			
+			Rectangle tempRectangle = new Rectangle(positionLoc, startPoint, tempEnd);
+			
+			tempRectangles.add(tempRectangle);
+			
+		}
 		return false;
 	}
 

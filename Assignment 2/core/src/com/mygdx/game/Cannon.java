@@ -10,7 +10,9 @@ public class Cannon {
 	
 	public CannonBall cannonBall;
 	
-	public Cannon() {
+	private Rectangle muzzle;
+	
+	public Cannon(int positionLoc) {
 		// Set the position of the cannon
 		position = new Point3D();
 		position.x = Gdx.graphics.getWidth() / 2;
@@ -23,6 +25,8 @@ public class Cannon {
 		cannonBall = new CannonBall();
 		cannonBall.position.x = position.x;
 		cannonBall.position.y = position.y;
+		
+		muzzle = new Rectangle(positionLoc, new Point3D(-10, 0, 0), new Point3D(10, 50, 1));
 	}
 	
 	public void display(int colorLoc) {
@@ -39,13 +43,9 @@ public class Cannon {
 		ModelMatrix.main.popMatrix();
 		
 		// Draw the cannon shaft
-		ModelMatrix.main.pushMatrix();
-		ModelMatrix.main.addTranslation(0, 25, 1);
-		ModelMatrix.main.addScale(20, 80, 1);
 		Gdx.gl.glUniform4f(colorLoc, 0, 0, 0, 1);
 		ModelMatrix.main.setShaderMatrix();
-		Rectangle.drawSolidSquare();
-		ModelMatrix.main.popMatrix();
+		muzzle.drawSolidSquare();
 
 		ModelMatrix.main.popMatrix();
 		
