@@ -178,20 +178,23 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 			Point3D p_hit = new Point3D(0, 0, 0);
 			
 			p_hit.x = cb.position.x + cb.velocity.x * t_hit;
-			p_hit.y = cb.position.y * cb.velocity.y * t_hit;
+			p_hit.y = cb.position.y + cb.velocity.y * t_hit;
 			
 			if((p_hit.x >= line.B.x && p_hit.x <= line.C.x) || (p_hit.x >= line.C.x && p_hit.x <= line.B.x)) {
-				Vector3D reflectedMotion = new Vector3D(0, 0, 0);
+				if((p_hit.y >= line.B.y && p_hit.y <= line.C.y) || (p_hit.y >= line.C.y && p_hit.y <= line.B.y)) {
+					Vector3D reflectedMotion = new Vector3D(0, 0, 0);
+					
+					float lengthOfN = (float) Math.sqrt(n.x * n.x + n.y * n.y);
+					n.x = n.x/lengthOfN;
+					n.y = n.y/lengthOfN;
+					
+					float AdotN = cb.velocity.x * n.x + cb.velocity.y * n.y;
+					reflectedMotion.x = cb.velocity.x - 2 * AdotN * n.x;
+					reflectedMotion.y = cb.velocity.y - 2 * AdotN * n.y;
+					
+					cb.velocity = reflectedMotion;
+				}
 				
-				float lengthOfN = (float) Math.sqrt(n.x * n.x + n.y * n.y);
-				n.x = n.x/lengthOfN;
-				n.y = n.y/lengthOfN;
-				
-				float AdotN = cb.velocity.x * n.x + cb.velocity.y * n.y;
-				reflectedMotion.x = cb.velocity.x - 2 * AdotN * n.x;
-				reflectedMotion.y = cb.velocity.y - 2 * AdotN * n.y;
-				
-				cb.velocity = reflectedMotion;
 			}
 		}
 		
