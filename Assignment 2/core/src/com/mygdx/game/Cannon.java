@@ -74,7 +74,7 @@ public class Cannon {
 		
 		cannonBall.orientation.addTransformation(orientation.matrix);
 		cannonBall.velocity = cannonBall.orientation.getB();
-		cannonBall.velocity.scale(300);
+		cannonBall.velocity.scale(500);
 		cannonBall.position.x = position.x;
 		cannonBall.position.y = position.y;
 	}
