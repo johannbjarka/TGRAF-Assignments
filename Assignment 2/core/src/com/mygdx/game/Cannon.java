@@ -63,8 +63,9 @@ public class Cannon {
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
 			orientation.addRotationZ(-180.0f * deltaTime);
 		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+		if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && !CannonBall.isActive) {
 			shoot();
+			CannonBall.isActive = true;
 		}
 	}
 	

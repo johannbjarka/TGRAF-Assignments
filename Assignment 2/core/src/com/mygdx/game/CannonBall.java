@@ -2,13 +2,14 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 
-
 public class CannonBall {
 	public Point3D position;
 	
 	public Vector3D velocity;
 	
 	public ModelMatrix orientation;
+	
+	public static boolean isActive = false;
 	
 	public CannonBall() {
 		position = new Point3D(0, 0, 0);
@@ -38,6 +39,14 @@ public class CannonBall {
 		
 		orientation.matrix.put(12, orientation.matrix.get(12) + velocity.x * deltaTime);
 		orientation.matrix.put(13, orientation.matrix.get(13) + velocity.y * deltaTime);
-	}
-	
+		
+		// Check if cannonball is out of bounds
+		if(isActive && (position.x >= Gdx.graphics.getWidth() || position.x < 0 
+				|| position.y >= Gdx.graphics.getHeight() || position.y < 0)) {
+			isActive = false;
+			position.x = 0;
+			position.y = 0;
+			OurAwesomeCannonGame.clearGame();
+		}
+	}	
 }

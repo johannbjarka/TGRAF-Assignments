@@ -28,11 +28,11 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 	
 	private Cannon cannon;
 	
-	private ArrayList<Rectangle> rectangles;
-	private ArrayList<Rectangle> tempRectangles;
+	private static ArrayList<Rectangle> rectangles;
+	private static ArrayList<Rectangle> tempRectangles;
 	
-	private ArrayList<Line> lines;
-	private ArrayList<Line> tempLines;
+	private static ArrayList<Line> lines;
+	private static ArrayList<Line> tempLines;
 	
 	private Point3D startPoint;
 	private Point3D endPoint;
@@ -129,7 +129,6 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 				Collide(side, cannon.cannonBall, deltaTime);
 			}
 		}
-		
 	}
 	
 	private void input() {
@@ -194,11 +193,15 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 					
 					cb.velocity = reflectedMotion;
 				}
-				
 			}
 		}
-		
-		
+	}
+	
+	public static void clearGame() {
+		lines.clear();
+		tempLines.clear();
+		rectangles.clear();
+		tempRectangles.clear();
 	}
 
 	@Override
@@ -228,6 +231,9 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		if(CannonBall.isActive) {
+			return false;
+		}
 		// Create the start point
 		if(button == Buttons.RIGHT) {
 			isDrawingLine = true;
@@ -240,6 +246,9 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		if(CannonBall.isActive) {
+			return false;
+		}
 		// Save the end point
 		endPoint = new Point3D(screenX, Gdx.graphics.getHeight() - screenY, 1);
 		
@@ -259,6 +268,9 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		if(CannonBall.isActive) {
+			return false;
+		}
 		// Save the temporary end point
 		Point3D tempEnd = new Point3D(screenX, Gdx.graphics.getHeight() - screenY, 1);
 		
@@ -266,17 +278,14 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 			// Draw the lines
 			tempLines.clear();
 			
-			Line tempLine = new Line(positionLoc, startPoint, tempEnd);
-			
+			Line tempLine = new Line(positionLoc, startPoint, tempEnd);			
 			tempLines.add(tempLine);
 		} else if(isDrawingRect) {
 			// Draw the rectangle
 			tempRectangles.clear();
 			
-			Rectangle tempRectangle = new Rectangle(positionLoc, startPoint, tempEnd);
-			
-			tempRectangles.add(tempRectangle);
-			
+			Rectangle tempRectangle = new Rectangle(positionLoc, startPoint, tempEnd);			
+			tempRectangles.add(tempRectangle);			
 		}
 		return false;
 	}
