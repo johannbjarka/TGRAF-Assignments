@@ -21,11 +21,10 @@ public class CannonBall {
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.addTransformation(orientation.matrix);
 		
-		// Draw the circle base
 		ModelMatrix.main.pushMatrix();
 		//ModelMatrix.main.addTranslation(position.x, position.y, 1);
 		ModelMatrix.main.addScale(10, 10, 1);
-		Gdx.gl.glUniform4f(colorLoc, 0, 0, 0, 1);
+		Gdx.gl.glUniform4f(colorLoc, 1, 0.5f, 0.5f, 1);
 		ModelMatrix.main.setShaderMatrix();
 		Circle.drawSolidCircle();
 		ModelMatrix.main.popMatrix();

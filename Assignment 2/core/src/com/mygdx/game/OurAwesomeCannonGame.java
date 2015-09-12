@@ -39,6 +39,9 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 	
 	private boolean isDrawingLine;
 	private boolean isDrawingRect;
+	
+	private Rectangle goal;
+	private Rectangle obstacle;
 
 	@Override
 	public void create () {
@@ -112,6 +115,14 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 		cannon = new Cannon(positionLoc);
 		
 		Gdx.input.setInputProcessor(this);
+		
+		goal = new Rectangle(positionLoc, 
+				new Point3D((Gdx.graphics.getWidth() / 2) - 40, (Gdx.graphics.getHeight() -50), 1),
+				new Point3D((Gdx.graphics.getWidth() / 2) + 40, Gdx.graphics.getHeight() - 130, 1));
+		
+		obstacle = new Rectangle(positionLoc, 
+				new Point3D((Gdx.graphics.getWidth() / 2) - 60, 200, 1),
+				new Point3D((Gdx.graphics.getWidth() / 2) + 60, 250, 1));
 	}
 	
 	private void update() {
@@ -121,13 +132,21 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 		
 		// Check for collisions
 		for(Line line : lines) {
-			Collide(line, cannon.cannonBall, deltaTime);
+			Collide(line, cannon.cannonBall, deltaTime, false);
 		}
 		
 		for(Rectangle rectangle : rectangles) {
 			for(Line side : rectangle.sides) {
-				Collide(side, cannon.cannonBall, deltaTime);
+				Collide(side, cannon.cannonBall, deltaTime, false);
 			}
+		}
+		
+		for(Line side : goal.sides) {
+			Collide(side, cannon.cannonBall, deltaTime, true);
+		}
+		
+		for(Line side : obstacle.sides) {
+			Collide(side, cannon.cannonBall, deltaTime, false);
 		}
 	}
 	
@@ -139,33 +158,47 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 	private void display() {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		cannon.display(colorLoc);
+		
+		// Draw the goal
+		ModelMatrix.main.pushMatrix();
+		Gdx.gl.glUniform4f(colorLoc, 0.2f, 1, 0.2f, 1);
+		ModelMatrix.main.setShaderMatrix();
+		goal.drawSolidSquare();
+		ModelMatrix.main.popMatrix();
+		
+		// Draw the obstacle
+		ModelMatrix.main.pushMatrix();
+		Gdx.gl.glUniform4f(colorLoc, 0, 0, 1, 1);
+		ModelMatrix.main.setShaderMatrix();
+		obstacle.drawSolidSquare();
+		ModelMatrix.main.popMatrix();
 
 		ModelMatrix.main.setShaderMatrix();
 		for(Line line : lines) {
-			Gdx.gl.glUniform4f(colorLoc, 0, 0, 0, 1);
+			Gdx.gl.glUniform4f(colorLoc, 1, 0.2f, 0.2f, 1);
 			line.drawSolidLine();
 		}
 		
 		ModelMatrix.main.setShaderMatrix();
 		for(Line line : tempLines) {
-			Gdx.gl.glUniform4f(colorLoc, 0, 0, 0, 1);
+			Gdx.gl.glUniform4f(colorLoc, 1, 0.2f, 0.2f, 1);
 			line.drawSolidLine();
 		}
 		
 		ModelMatrix.main.setShaderMatrix();
 		for(Rectangle rectangle : rectangles) {
-			Gdx.gl.glUniform4f(colorLoc, 0, 0, 0, 1);
-			rectangle.drawOutlineSquare();
+			Gdx.gl.glUniform4f(colorLoc, 0.6f, 0.1f, 0.6f, 1);
+			rectangle.drawSolidSquare();
 		}
 		
 		ModelMatrix.main.setShaderMatrix();
 		for(Rectangle rectangle : tempRectangles) {
-			Gdx.gl.glUniform4f(colorLoc, 0, 0, 0, 1);
-			rectangle.drawOutlineSquare();
-		}	
+			Gdx.gl.glUniform4f(colorLoc, 0.6f, 0.1f, 0.6f, 1);
+			rectangle.drawSolidSquare();
+		}
 	}
 	
-	private void Collide(Line line, CannonBall cb, float deltaTime) {
+	private void Collide(Line line, CannonBall cb, float deltaTime, boolean isGoal) {
 		Vector3D n = new Vector3D(0, 0, 0);
 		n.x = -(line.C.y - line.B.y);
 		n.y = line.C.x - line.B.x; 
@@ -181,6 +214,13 @@ public class OurAwesomeCannonGame extends ApplicationAdapter implements InputPro
 			
 			if((p_hit.x >= line.B.x && p_hit.x <= line.C.x) || (p_hit.x >= line.C.x && p_hit.x <= line.B.x)) {
 				if((p_hit.y >= line.B.y && p_hit.y <= line.C.y) || (p_hit.y >= line.C.y && p_hit.y <= line.B.y)) {
+					if(isGoal) {
+						clearGame();
+						cb.velocity.x = 0;
+						cb.velocity.y = 0;
+						CannonBall.isActive = false;
+						return;
+					}
 					Vector3D reflectedMotion = new Vector3D(0, 0, 0);
 					
 					float lengthOfN = (float) Math.sqrt(n.x * n.x + n.y * n.y);
