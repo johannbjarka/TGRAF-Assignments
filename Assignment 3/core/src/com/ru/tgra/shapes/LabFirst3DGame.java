@@ -28,8 +28,6 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 
 	private int colorLoc;
 	
-	private int mouseX;
-	private int mouseY;
 	private Camera myCamera;
 	
 	Point3D eye;
@@ -106,8 +104,7 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 		myCamera.Look3D(eye, center, upVector);
 		myCamera.setShaderMatrix(viewMatrixLoc);
 		
-		mouseX = Gdx.input.getX();
-		mouseY = Gdx.input.getY();
+		Gdx.input.setCursorCatched(true);
 	}
 
 	private void input()
@@ -152,8 +149,6 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 	private void update()
 	{
 		//do all updates to the game
-		mouseX = Gdx.input.getX();
-		mouseY = Gdx.input.getY();
 	}
 	
 	private void display()
@@ -289,9 +284,6 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 
 	@Override
 	public void render () {
-		//Gdx.input.setCursorCatched(true);
-		
-		
 		input();
 		//put the code inside the update and display methods, depending on the nature of the code
 		update();
@@ -380,17 +372,12 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 	public boolean mouseMoved(int screenX, int screenY) {
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		
-		center.x += -((Gdx.graphics.getWidth() / 2) - screenX) * deltaTime;
-		center.y += ((Gdx.graphics.getHeight() / 2) - screenY) * deltaTime;
-		
-		/*
-		center.x += Gdx.input.getDeltaX() * deltaTime;
-		center.y += -Gdx.input.getDeltaY() * deltaTime;
-		*/
-		
-		myCamera.Look3D(eye, center, upVector);
+		myCamera.Yaw(-((Gdx.graphics.getWidth() / 2) - screenX) * deltaTime * 5);
+		myCamera.Pitch(-((Gdx.graphics.getHeight() / 2) - screenY) * deltaTime * 5);
 		
 		Gdx.input.setCursorPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+		
+		System.out.println(myCamera.n.z);
 		
 		return false;
 	}

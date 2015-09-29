@@ -9,10 +9,10 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
 		config.title = "Lab1"; // or whatever you like
-		config.width = 640;  //experiment with
+		config.width = 720;  //experiment with
 		config.height = 640;  //the window size
-		config.x = 350;
-		config.y = 50;
+		config.x = 0;
+		config.y = 0;
 
 		new LwjglApplication(new LabFirst3DGame(), config);
 	}

@@ -41,7 +41,9 @@ public class Camera {
 		float C = (float) Math.cos(ang), S = (float) Math.sin(ang);
 		
 		Vector3D t = new Vector3D(C * a.x + S * b.x, C * a.y + S * b.y, C * a.z + S * b.z);
+		
 		b.set(-S * a.x + C * b.x, -S * a.y + C * b.y, -S * a.z + C * b.z);
+		
 		a.set(t.x, t.y, t.z);
 		
 	}
