@@ -28,6 +28,8 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 
 	private int colorLoc;
 	
+	private int mouseX;
+	private int mouseY;
 	private Camera myCamera;
 	
 	Point3D eye;
@@ -94,12 +96,18 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 
 		//OrthographicProjection3D(-2, 2, -2, 2, 1, 100);
 		PerspctiveProjection3D();
-		eye = new Point3D(1.5f, 1.2f, 2.0f);
+		
+		eye = new Point3D(1.5f, 2.0f, 3.0f);
 		myCamera = new Camera(eye);
+		
 		center = new Point3D(0,0,0);
 		upVector = new Vector3D(0,1,0);
+		
 		myCamera.Look3D(eye, center, upVector);
 		myCamera.setShaderMatrix(viewMatrixLoc);
+		
+		mouseX = Gdx.input.getX();
+		mouseY = Gdx.input.getY();
 	}
 
 	private void input()
@@ -121,16 +129,16 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 			myCamera.Slide(0, -speed, 0);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.A)) {
-			myCamera.Roll(angle);
+			myCamera.Slide(-speed, 0, 0);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.D)) {
-			myCamera.Roll(-angle);
+			myCamera.Slide(speed, 0, 0);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.W)) {
-			myCamera.Pitch(-angle);
+			myCamera.Slide(0, 0, -speed);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.S)) {
-			myCamera.Pitch(angle);
+			myCamera.Slide(0, 0, speed);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.Q)) {
 			myCamera.Yaw(-angle);
@@ -144,6 +152,8 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 	private void update()
 	{
 		//do all updates to the game
+		mouseX = Gdx.input.getX();
+		mouseY = Gdx.input.getY();
 	}
 	
 	private void display()
@@ -155,6 +165,10 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 
 		ModelMatrix.main.loadIdentityMatrix();
 		
+		drawPyramid();
+		
+	}
+	public void drawPyramid() {
 		float space = 0.13f;
 		Point3D pos = new Point3D(0,0,0);
 		
@@ -232,10 +246,6 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 		pos.z += space;
 		
 		drawCubeLine(1, pos, 1, space);
-		
-		
-		
-		
 	}
 	
 	public void drawCubeLine(int num, Point3D pos, int direction, float space) {
@@ -280,6 +290,7 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 	@Override
 	public void render () {
 		//Gdx.input.setCursorCatched(true);
+		
 		
 		input();
 		//put the code inside the update and display methods, depending on the nature of the code
@@ -367,9 +378,19 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
-		Point3D newCenter = new Point3D(screenX, screenY, 0);
-		//myCamera.Look3D(eye, newCenter, upVector);
+		float deltaTime = Gdx.graphics.getDeltaTime();
+		
+		center.x += -((Gdx.graphics.getWidth() / 2) - screenX) * deltaTime;
+		center.y += ((Gdx.graphics.getHeight() / 2) - screenY) * deltaTime;
+		
+		/*
+		center.x += Gdx.input.getDeltaX() * deltaTime;
+		center.y += -Gdx.input.getDeltaY() * deltaTime;
+		*/
+		
+		myCamera.Look3D(eye, center, upVector);
+		
+		Gdx.input.setCursorPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
 		
 		return false;
 	}

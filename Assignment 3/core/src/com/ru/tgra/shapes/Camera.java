@@ -20,10 +20,13 @@ public class Camera {
 	}
 	
 	public void Look3D(Point3D eye, Point3D center, Vector3D up) {
+		
 		this.n = Vector3D.difference(eye, center);
 		this.u = up.cross(n);
+		
 		n.normalize();
 		u.normalize();
+		
 		this.v = n.cross(u);
 	}
 	
