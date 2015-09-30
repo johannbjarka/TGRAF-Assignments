@@ -15,4 +15,7 @@ public class Player {
 		this.camera.Look3D(position, center, upVector);
 	}
 	
+	public void walk() {
+		
+	}
 }

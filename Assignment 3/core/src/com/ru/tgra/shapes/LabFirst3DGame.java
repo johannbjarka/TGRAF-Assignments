@@ -114,16 +114,16 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 		float angle = 180.0f * deltaTime;
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-			myPlayer.camera.Slide(-speed, 0, 0);
+			
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-			myPlayer.camera.Slide(speed, 0, 0);
+			
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-			myPlayer.camera.Slide(0, speed, 0);
+			
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-			myPlayer.camera.Slide(0, -speed, 0);
+			
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.A)) {
 			myPlayer.camera.Slide(-speed, 0, 0);
