@@ -30,6 +30,8 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 	
 	private Camera myCamera;
 	
+	private Pyramid myPyramid;
+	
 	Point3D eye;
 	Point3D center;
 	Vector3D upVector;
@@ -104,6 +106,8 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 		myCamera.Look3D(eye, center, upVector);
 		myCamera.setShaderMatrix(viewMatrixLoc);
 		
+		myPyramid = new Pyramid();
+		
 		Gdx.input.setCursorCatched(true);
 	}
 
@@ -160,127 +164,9 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 
 		ModelMatrix.main.loadIdentityMatrix();
 		
-		drawPyramid();
-		
-	}
-	public void drawPyramid() {
-		float space = 0.13f;
-		Point3D pos = new Point3D(0,0,0);
-		
-		drawCubeLine(9, pos, 1, space);
-		drawCubeLine(9, pos, 3, space);
-		drawCubeLine(9, pos, 0, space);
-		drawCubeLine(9, pos, 2, space);
-		
-		pos.x += space / 2;
-		pos.y += space / 1.5;
-		pos.z += space / 2;
-		
-		drawCubeLine(8, pos, 1, space);
-		drawCubeLine(8, pos, 3, space);
-		drawCubeLine(8, pos, 0, space);
-		drawCubeLine(8, pos, 2, space);
-		
-		
-		pos.x += space / 2;
-		pos.y += space / 1.5;
-		pos.z += space / 2;
-		
-		drawCubeLine(7, pos, 1, space);
-		drawCubeLine(7, pos, 3, space);
-		drawCubeLine(7, pos, 0, space);
-		drawCubeLine(7, pos, 2, space);
-		
-		pos.x += space / 2;
-		pos.y += space / 1.5;
-		pos.z += space / 2;
-		
-		drawCubeLine(6, pos, 1, space);
-		drawCubeLine(6, pos, 3, space);
-		drawCubeLine(6, pos, 0, space);
-		drawCubeLine(6, pos, 2, space);
-		
-		pos.x += space / 2;
-		pos.y += space / 1.5;
-		pos.z += space / 2;
-		
-		drawCubeLine(5, pos, 1, space);
-		drawCubeLine(5, pos, 3, space);
-		drawCubeLine(5, pos, 0, space);
-		drawCubeLine(5, pos, 2, space);
-		
-		pos.x += space / 2;
-		pos.y += space / 1.5;
-		pos.z += space / 2;
-		
-		drawCubeLine(4, pos, 1, space);
-		drawCubeLine(4, pos, 3, space);
-		drawCubeLine(4, pos, 0, space);
-		drawCubeLine(4, pos, 2, space);
-		
-		pos.x += space / 2;
-		pos.y += space / 1.5;
-		pos.z += space / 2;
-		
-		drawCubeLine(3, pos, 1, space);
-		drawCubeLine(3, pos, 3, space);
-		drawCubeLine(3, pos, 0, space);
-		drawCubeLine(3, pos, 2, space);
-		
-		pos.x += space / 2;
-		pos.y += space / 1.5;
-		pos.z += space / 2;
-		
-		drawCubeLine(2, pos, 1, space);
-		drawCubeLine(2, pos, 3, space);
-		drawCubeLine(2, pos, 0, space);
-		drawCubeLine(2, pos, 2, space);
-		
-		pos.x += space;
-		pos.y += space / 1.5;
-		pos.z += space;
-		
-		drawCubeLine(1, pos, 1, space);
+		myPyramid.Draw();
 	}
 	
-	public void drawCubeLine(int num, Point3D pos, int direction, float space) {
-		for(int i = 0; i < num; i++) {
-			if(direction == -2){
-				drawCubeAtPos(pos);
-				pos.y -= space;
-				
-			} else if(direction == -1) {
-				drawCubeAtPos(pos);
-				pos.y += space;
-				
-			} else if(direction == 0) {
-				drawCubeAtPos(pos);
-				pos.x -= space;
-				
-			} else if(direction == 1) {
-				drawCubeAtPos(pos);
-				pos.x += space;
-				
-			} else if(direction == 2) {
-				drawCubeAtPos(pos);
-				pos.z -= space;
-				
-			} else if(direction == 3) {
-				drawCubeAtPos(pos);
-				pos.z += space;
-				
-			}
-		}
-	}
-	
-	public void drawCubeAtPos(Point3D pos) {
-		ModelMatrix.main.pushMatrix();
-		ModelMatrix.main.addTranslation(pos.x, pos.y, pos.z);
-		ModelMatrix.main.addScale(0.1f, 0.1f, 0.1f);
-		ModelMatrix.main.setShaderMatrix();
-		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.popMatrix();
-	}
 
 	@Override
 	public void render () {
@@ -372,12 +258,14 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 	public boolean mouseMoved(int screenX, int screenY) {
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		
-		myCamera.Yaw(-((Gdx.graphics.getWidth() / 2) - screenX) * deltaTime * 5);
-		myCamera.Pitch(-((Gdx.graphics.getHeight() / 2) - screenY) * deltaTime * 5);
+		// Roll around the Y vector
+		float xAngle = -((Gdx.graphics.getWidth() / 2) - screenX) * deltaTime * 5;
+		myCamera.LookAround(xAngle);
+		// Roll around the X vector
+		float yAngle = -((Gdx.graphics.getHeight() / 2) - screenY) * deltaTime * 5;
+		myCamera.Pitch(yAngle);
 		
 		Gdx.input.setCursorPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
-		
-		System.out.println(myCamera.n.z);
 		
 		return false;
 	}
