@@ -28,9 +28,9 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 
 	private int colorLoc;
 	
-	private Camera myCamera;
-	
 	private Pyramid myPyramid;
+	
+	private Player myPlayer;
 	
 	Point3D eye;
 	Point3D center;
@@ -97,14 +97,10 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 		//OrthographicProjection3D(-2, 2, -2, 2, 1, 100);
 		PerspctiveProjection3D();
 		
-		eye = new Point3D(1.5f, 2.0f, 3.0f);
-		myCamera = new Camera(eye);
+		Point3D startingPosition = new Point3D(1.5f, 2.0f, 3.0f);
 		
-		center = new Point3D(0,0,0);
-		upVector = new Vector3D(0,1,0);
-		
-		myCamera.Look3D(eye, center, upVector);
-		myCamera.setShaderMatrix(viewMatrixLoc);
+		myPlayer = new Player(startingPosition);
+		myPlayer.camera.setShaderMatrix(viewMatrixLoc);
 		
 		myPyramid = new Pyramid();
 		
@@ -118,36 +114,36 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 		float angle = 180.0f * deltaTime;
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-			myCamera.Slide(-speed, 0, 0);
+			myPlayer.camera.Slide(-speed, 0, 0);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-			myCamera.Slide(speed, 0, 0);
+			myPlayer.camera.Slide(speed, 0, 0);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-			myCamera.Slide(0, speed, 0);
+			myPlayer.camera.Slide(0, speed, 0);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-			myCamera.Slide(0, -speed, 0);
+			myPlayer.camera.Slide(0, -speed, 0);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.A)) {
-			myCamera.Slide(-speed, 0, 0);
+			myPlayer.camera.Slide(-speed, 0, 0);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.D)) {
-			myCamera.Slide(speed, 0, 0);
+			myPlayer.camera.Slide(speed, 0, 0);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.W)) {
-			myCamera.Slide(0, 0, -speed);
+			myPlayer.camera.Slide(0, 0, -speed);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.S)) {
-			myCamera.Slide(0, 0, speed);
+			myPlayer.camera.Slide(0, 0, speed);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.Q)) {
-			myCamera.Yaw(-angle);
+			myPlayer.camera.Yaw(-angle);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.E)) {
-			myCamera.Yaw(angle);
+			myPlayer.camera.Yaw(angle);
 		}
-		myCamera.setShaderMatrix(viewMatrixLoc);
+		myPlayer.camera.setShaderMatrix(viewMatrixLoc);
 	}
 	
 	private void update()
@@ -260,10 +256,10 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 		
 		// Roll around the Y vector
 		float xAngle = -((Gdx.graphics.getWidth() / 2) - screenX) * deltaTime * 5;
-		myCamera.LookAround(xAngle);
+		myPlayer.camera.LookAround(xAngle);
 		// Roll around the X vector
 		float yAngle = -((Gdx.graphics.getHeight() / 2) - screenY) * deltaTime * 5;
-		myCamera.Pitch(yAngle);
+		myPlayer.camera.Pitch(yAngle);
 		
 		Gdx.input.setCursorPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
 		
@@ -273,7 +269,7 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 	@Override
 	public boolean scrolled(int amount) {
 		// TODO Auto-generated method stub
-		myCamera.Slide(0, 0, amount);
+		myPlayer.camera.Slide(0, 0, amount);
 		return false;
 	}
 

@@ -12,15 +12,14 @@ public class Camera {
 	
 	private FloatBuffer matrixBuffer;
 	
-	public Camera(Point3D _eye) {
-		eye = _eye;
+	public Camera() {
 		u = new Vector3D(0,0,0);
 		v = new Vector3D(0,0,0);
 		n = new Vector3D(0,0,0);
 	}
 	
 	public void Look3D(Point3D eye, Point3D center, Vector3D up) {
-		
+		this.eye = eye;
 		this.n = Vector3D.difference(eye, center);
 		this.u = up.cross(n);
 		
@@ -34,21 +33,18 @@ public class Camera {
 		eye.x += delU * u.x + delV * v.x + delN * n.x;
 		eye.y += delU * u.y + delV * v.y + delN * n.y;
 		eye.z += delU * u.z + delV * v.z + delN * n.z;
-		/*
-		 * Slide forward (deltaforward)
-		 * eye.x += deltaforward * -n.x
-		 * eye.y += deltaforward * -n.y
-		 * eye.z += deltaforward * -n.z
-		 * 
-		 * staðinn taka eye.y út og
-		 * vector3d forward = (-n.x,0, -n.z)
-		 * forward.normalize();
-		 * eye.x += deltaforward * forward.x
-		 * eye.z += deltaforward * forward.z
-		 */
+	}
+	
+	public void SlideForward(float deltaForward) {
+		Vector3D forward = new Vector3D(-n.x, 0, -n.z);
+		forward.normalize();
+		
+		eye.x += deltaForward * forward.x;
+		eye.z += deltaForward * forward.z;
 	}
 	
 	public void RotateAxis(Vector3D a, Vector3D b, float angle) {
+		
 		float ang = (float) (Math.PI/180 * angle);
 		float C = (float) Math.cos(ang), S = (float) Math.sin(ang);
 		
@@ -69,49 +65,30 @@ public class Camera {
 		
 		RotateAxis( n, v, angle );
 	}
+	
 	public void Yaw(float angle) {
 		
 		RotateAxis( u, n, angle );
-		/*
-		 * Ux = cos*Ux - sin*Uz
-		 * Uz = -sin * Ux + cos*Uz
-		 * Vx = cos*Vx - sin*Vz
-		 * Vz = -sin * Vx + cos*vz
-		 * Nx = cos*Nx - sin*Nz
-		 * Nz = -sin*Nx + cos*Nz
-		 * 
-		 * Remember to copy data
-		 * copy u
-		 */
 	}
+	
 	public void LookAround(float angle) {
+		
 		float ang = (float) (Math.PI/180 * angle);
 		float C = (float) Math.cos(ang), S = (float) Math.sin(ang);
 		
 		float Ux = u.x;
 		u.x = C * Ux - S * u.z;
 		u.z = S * Ux + C * u.z;
+		
 		float Vx = v.x;
 		v.x = C * Vx - S * v.z;
 		v.z = S * Vx + C * v.z;
+		
 		float Nx = n.x;
 		n.x = C * Nx - S * n.z;
 		n.z = S * Nx + C * n.z;
 	}
-	public void LookAroundY(float angle) {
-		float ang = (float) (Math.PI/180 * angle);
-		float C = (float) Math.cos(ang), S = (float) Math.sin(ang);
-		
-		float Uy = u.y;
-		u.y = C * Uy - S * u.z;
-		u.z = S * Uy + C * u.z;
-		float Vy = v.y;
-		v.y = C * Vy - S * v.z;
-		v.z = S * Vy + C * v.z;
-		float Ny = n.y;
-		n.y = C * Ny - S * n.z;
-		n.z = S * Ny + C * n.z;
-	}
+	
 	public void setShaderMatrix(int viewMatrixLoc) {
 		Vector3D minusEye = new Vector3D(-eye.x, -eye.y, -eye.z);
 		
