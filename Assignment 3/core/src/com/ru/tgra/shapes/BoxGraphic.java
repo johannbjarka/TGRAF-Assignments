@@ -8,14 +8,14 @@ import com.badlogic.gdx.utils.BufferUtils;
 
 public class BoxGraphic {
 
-	private static FloatBuffer vertexBuffer;
-	private static FloatBuffer normalBuffer;
-	private static int vertexPointer;
-	private static int normalPointer;
+	private FloatBuffer vertexBuffer;
+	private FloatBuffer normalBuffer;
+	private int vertexPointer;
+	private int normalPointer;
 
-	public static void create(int vertexPointer, int normalPointer) {
-		BoxGraphic.vertexPointer = vertexPointer;
-		BoxGraphic.normalPointer = normalPointer;
+	public BoxGraphic(int vertexPointer, int normalPointer) {
+		this.vertexPointer = vertexPointer;
+		this.normalPointer = normalPointer;
 		//VERTEX ARRAY IS FILLED HERE
 		float[] vertexArray = {-0.5f, -0.5f, -0.5f,
 						-0.5f, 0.5f, -0.5f,
@@ -77,7 +77,7 @@ public class BoxGraphic {
 		normalBuffer.rewind();
 	}
 
-	public static void drawSolidCube() {
+	public void drawSolidCube() {
 
 		Gdx.gl.glVertexAttribPointer(vertexPointer, 3, GL20.GL_FLOAT, false, 0, vertexBuffer);
 		Gdx.gl.glVertexAttribPointer(normalPointer, 3, GL20.GL_FLOAT, false, 0, normalBuffer);
@@ -91,7 +91,7 @@ public class BoxGraphic {
 
 	}
 
-	public static void drawOutlineCube() {
+	public void drawOutlineCube() {
 
 		Gdx.gl.glVertexAttribPointer(vertexPointer, 3, GL20.GL_FLOAT, false, 0, vertexBuffer);
 		Gdx.gl.glVertexAttribPointer(normalPointer, 3, GL20.GL_FLOAT, false, 0, normalBuffer);

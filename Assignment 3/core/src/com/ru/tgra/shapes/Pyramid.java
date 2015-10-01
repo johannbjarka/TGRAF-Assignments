@@ -4,10 +4,12 @@ public class Pyramid {
 	
 	public float spaceBetweenBlocks;
 	Point3D position;
+	BoxGraphic newBox;
 	
-	public Pyramid() {
-		this.spaceBetweenBlocks = 0.13f;
+	public Pyramid(int positionLoc, int normalLoc) {
+		this.spaceBetweenBlocks = 1.3f;
 		this.position = new Point3D(0,0,0);
+		this.newBox = new BoxGraphic(positionLoc, normalLoc);
 	}
 
 	public void Draw() {
@@ -124,9 +126,9 @@ public class Pyramid {
 	public void drawCubeAtPos() {
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.addTranslation(position.x, position.y, position.z);
-		ModelMatrix.main.addScale(0.1f, 0.1f, 0.1f);
+		ModelMatrix.main.addScale(1f, 1f, 1f);
 		ModelMatrix.main.setShaderMatrix();
-		BoxGraphic.drawSolidCube();
+		newBox.drawSolidCube();
 		ModelMatrix.main.popMatrix();
 	}
 }

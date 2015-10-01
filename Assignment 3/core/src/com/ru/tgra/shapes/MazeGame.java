@@ -11,7 +11,7 @@ import java.nio.FloatBuffer;
 
 import com.badlogic.gdx.utils.BufferUtils;
 
-public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor {
+public class MazeGame extends ApplicationAdapter implements InputProcessor {
 
 	private FloatBuffer matrixBuffer;
 
@@ -30,11 +30,10 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 	
 	private Pyramid myPyramid;
 	
+	private Maze myMaze;
+	
 	private Player myPlayer;
 	
-	Point3D eye;
-	Point3D center;
-	Vector3D upVector;
 	@Override
 	public void create () {
 		
@@ -81,7 +80,7 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 		//COLOR IS SET HERE
 		Gdx.gl.glUniform4f(colorLoc, 0.7f, 0.2f, 0, 1);
 
-		BoxGraphic.create(positionLoc, normalLoc);
+		//BoxGraphic.create(positionLoc, normalLoc);
 		SphereGraphic.create(positionLoc, normalLoc);
 		SincGraphic.create(positionLoc);
 		CoordFrameGraphic.create(positionLoc);
@@ -95,14 +94,16 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
 		//OrthographicProjection3D(-2, 2, -2, 2, 1, 100);
-		PerspctiveProjection3D();
+		PerspectiveProjection3D();
 		
-		Point3D startingPosition = new Point3D(1.5f, 2.0f, 3.0f);
+		Point3D startingPosition = new Point3D(-10, 50.0f, 20.0f);
 		
 		myPlayer = new Player(startingPosition);
 		myPlayer.camera.setShaderMatrix(viewMatrixLoc);
 		
-		myPyramid = new Pyramid();
+		myPyramid = new Pyramid(positionLoc, normalLoc);
+		
+		myMaze = new Maze(positionLoc, normalLoc);
 		
 		Gdx.input.setCursorCatched(true);
 	}
@@ -110,39 +111,21 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 	private void input()
 	{
 		float deltaTime = Gdx.graphics.getDeltaTime();
-		float speed = 2 * deltaTime;
-		float angle = 180.0f * deltaTime;
 		
-		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-			
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-			
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-			
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-			
-		}
 		if(Gdx.input.isKeyPressed(Input.Keys.A)) {
-			myPlayer.camera.Slide(-speed, 0, 0);
+			myPlayer.goLeft(-myPlayer.speed * deltaTime);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.D)) {
-			myPlayer.camera.Slide(speed, 0, 0);
+			myPlayer.goRight(myPlayer.speed * deltaTime);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.W)) {
-			myPlayer.camera.Slide(0, 0, -speed);
+			myPlayer.goForward(-myPlayer.speed * deltaTime);
+			System.out.println(myPlayer.position.x + "," + myPlayer.position.y);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.S)) {
-			myPlayer.camera.Slide(0, 0, speed);
+			myPlayer.goBack(myPlayer.speed * deltaTime);
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.Q)) {
-			myPlayer.camera.Yaw(-angle);
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.E)) {
-			myPlayer.camera.Yaw(angle);
-		}
+		
 		myPlayer.camera.setShaderMatrix(viewMatrixLoc);
 	}
 	
@@ -160,7 +143,17 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 
 		ModelMatrix.main.loadIdentityMatrix();
 		
-		myPyramid.Draw();
+		//myPyramid.Draw();
+		//Cell myCell = new Cell(positionLoc, normalLoc);
+		//myCell.Draw();
+		
+		myMaze.Draw();
+		
+		ModelMatrix.main.pushMatrix();
+		ModelMatrix.main.addScale(1f, 1f, 1f);
+		ModelMatrix.main.setShaderMatrix();
+		SphereGraphic.drawSolidSphere();
+		ModelMatrix.main.popMatrix();
 	}
 	
 
@@ -199,12 +192,12 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 		Gdx.gl.glUniformMatrix4fv(viewMatrixLoc, 1, false, matrixBuffer);
 	}
 
-	private void PerspctiveProjection3D() {
+	private void PerspectiveProjection3D() {
 		float[] pm = new float[16];
 
 		pm[0] = 1.0f; pm[4] = 0.0f; pm[8] = 0.0f; pm[12] = 0.0f;
 		pm[1] = 0.0f; pm[5] = 1.0f; pm[9] = 0.0f; pm[13] = 0.0f;
-		pm[2] = 0.0f; pm[6] = 0.0f; pm[10] = -1.02f; pm[14] = -2.02f;
+		pm[2] = 0.0f; pm[6] = 0.0f; pm[10] = -1.02f; pm[14] = -4.02f;
 		pm[3] = 0.0f; pm[7] = 0.0f; pm[11] = -1.0f; pm[15] = 0.0f;
 
 		matrixBuffer = BufferUtils.newFloatBuffer(16);
@@ -252,11 +245,13 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
+		
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		
 		// Roll around the Y vector
 		float xAngle = -((Gdx.graphics.getWidth() / 2) - screenX) * deltaTime * 5;
 		myPlayer.camera.LookAround(xAngle);
+		
 		// Roll around the X vector
 		float yAngle = -((Gdx.graphics.getHeight() / 2) - screenY) * deltaTime * 5;
 		myPlayer.camera.Pitch(yAngle);
