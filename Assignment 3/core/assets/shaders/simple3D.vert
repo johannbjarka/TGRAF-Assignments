@@ -25,7 +25,8 @@ void main()
 	position = u_viewMatrix * position;
 	normal = u_viewMatrix * normal;
 
-	v_color = (dot(normal, vec4(0,0,1,0)) / length(normal)) * u_color;
+	//v_color = (dot(normal, vec4(0,0,1,0)) / length(normal)) * u_color;
+	v_color = max(0, (dot(normal, normalize(vec4(-position.x, -position.y, -position.z, 0))) / length(normal))) * u_color;
 
 	gl_Position = u_projectionMatrix * position;
 }

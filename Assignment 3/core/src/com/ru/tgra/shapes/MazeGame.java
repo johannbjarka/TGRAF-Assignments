@@ -53,6 +53,9 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 	
 		Gdx.gl.glCompileShader(vertexShaderID);
 		Gdx.gl.glCompileShader(fragmentShaderID);
+		
+		System.out.println(Gdx.gl.glGetShaderInfoLog(vertexShaderID));
+		System.out.println(Gdx.gl.glGetShaderInfoLog(fragmentShaderID));
 
 		renderingProgramID = Gdx.gl.glCreateProgram();
 	
@@ -197,7 +200,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 
 		pm[0] = 1.0f; pm[4] = 0.0f; pm[8] = 0.0f; pm[12] = 0.0f;
 		pm[1] = 0.0f; pm[5] = 1.0f; pm[9] = 0.0f; pm[13] = 0.0f;
-		pm[2] = 0.0f; pm[6] = 0.0f; pm[10] = -1.02f; pm[14] = -4.02f;
+		pm[2] = 0.0f; pm[6] = 0.0f; pm[10] = -1.02f; pm[14] = -6.02f;
 		pm[3] = 0.0f; pm[7] = 0.0f; pm[11] = -1.0f; pm[15] = 0.0f;
 
 		matrixBuffer = BufferUtils.newFloatBuffer(16);

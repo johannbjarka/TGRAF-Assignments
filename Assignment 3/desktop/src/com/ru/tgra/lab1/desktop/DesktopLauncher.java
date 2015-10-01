@@ -9,10 +9,11 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
 		config.title = "Lab1"; // or whatever you like
-		config.width = 720;  //experiment with
-		config.height = 640;  //the window size
-		config.x = config.width / 2;
-		config.y = config.height / 2;
+		//config.width = 720;  //experiment with
+		//config.height = 640;  //the window size
+		//config.x = config.width / 2;
+		//config.y = config.height / 2;
+		config.fullscreen = true;
 
 		new LwjglApplication(new MazeGame(), config);
 	}
