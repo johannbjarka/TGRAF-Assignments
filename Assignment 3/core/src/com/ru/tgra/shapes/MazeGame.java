@@ -99,7 +99,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		//OrthographicProjection3D(-2, 2, -2, 2, 1, 100);
 		PerspectiveProjection3D();
 		
-		Point3D startingPosition = new Point3D(-10, 50.0f, 20.0f);
+		Point3D startingPosition = new Point3D(0.5f, 2.0f, -0.5f);
 		
 		myPlayer = new Player(startingPosition);
 		myPlayer.camera.setShaderMatrix(viewMatrixLoc);
@@ -123,7 +123,6 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.W)) {
 			myPlayer.goForward(-myPlayer.speed * deltaTime);
-			System.out.println(myPlayer.position.x + "," + myPlayer.position.y);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.S)) {
 			myPlayer.goBack(myPlayer.speed * deltaTime);
@@ -153,7 +152,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		myMaze.Draw();
 		
 		ModelMatrix.main.pushMatrix();
-		ModelMatrix.main.addScale(1f, 1f, 1f);
+		ModelMatrix.main.addScale(0.1f, 0.1f, 0.1f);
 		ModelMatrix.main.setShaderMatrix();
 		SphereGraphic.drawSolidSphere();
 		ModelMatrix.main.popMatrix();
@@ -197,10 +196,16 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 
 	private void PerspectiveProjection3D() {
 		float[] pm = new float[16];
+		
+		float n = 0.1f;
+		float f = 1.0f;
+		
+		float eq1 = -(f+n/f-n);
+		float eq2 = -((2*f*n)/f-n);
 
 		pm[0] = 1.0f; pm[4] = 0.0f; pm[8] = 0.0f; pm[12] = 0.0f;
 		pm[1] = 0.0f; pm[5] = 1.0f; pm[9] = 0.0f; pm[13] = 0.0f;
-		pm[2] = 0.0f; pm[6] = 0.0f; pm[10] = -1.02f; pm[14] = -6.02f;
+		pm[2] = 0.0f; pm[6] = 0.0f; pm[10] = eq1; pm[14] = eq2;
 		pm[3] = 0.0f; pm[7] = 0.0f; pm[11] = -1.0f; pm[15] = 0.0f;
 
 		matrixBuffer = BufferUtils.newFloatBuffer(16);

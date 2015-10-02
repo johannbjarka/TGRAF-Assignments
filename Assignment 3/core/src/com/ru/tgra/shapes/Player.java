@@ -7,7 +7,7 @@ public class Player {
 	float speed;
 	
 	public Player(Point3D pos) {
-		this.speed = 50;
+		this.speed = 2;
 		this.position = pos;
 		this.camera = new Camera();
 		
