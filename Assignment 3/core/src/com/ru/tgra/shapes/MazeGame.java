@@ -145,10 +145,6 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 
 		ModelMatrix.main.loadIdentityMatrix();
 		
-		//myPyramid.Draw();
-		//Cell myCell = new Cell(positionLoc, normalLoc);
-		//myCell.Draw();
-		
 		myMaze.Draw();
 		
 		ModelMatrix.main.pushMatrix();

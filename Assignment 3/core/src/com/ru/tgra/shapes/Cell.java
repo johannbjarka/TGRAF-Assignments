@@ -12,6 +12,8 @@ public class Cell {
 	boolean hasNorthWall;
 	boolean hasEastWall;
 	
+	boolean visited;
+	
 	public Cell(int positionLoc, int normalLoc) {
 		
 		this.northWall = new BoxGraphic(positionLoc, normalLoc);
@@ -19,6 +21,7 @@ public class Cell {
 		
 		this.hasEastWall = true;
 		this.hasNorthWall = true;
+		this.visited = false;
 		
 		this.wallThickness = 0.1f;
 		this.wallLength = 1f;

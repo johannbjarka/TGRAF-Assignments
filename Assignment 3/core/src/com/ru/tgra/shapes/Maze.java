@@ -1,6 +1,8 @@
 package com.ru.tgra.shapes;
 
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.Stack;
 
 public class Maze {
 	
@@ -22,7 +24,7 @@ public class Maze {
 			}
 		}
 		
-		//this.GenerateMaze();
+		this.GenerateMaze();
 	}
 	
 	public void Draw() {
@@ -65,12 +67,62 @@ public class Maze {
 	
 	public void GenerateMaze() {
 		Random randNumberGenerator = new Random();
-		int x = randNumberGenerator.nextInt(cells.length);
-		int y = randNumberGenerator.nextInt(cells.length);
+		int x = 5;//randNumberGenerator.nextInt(cells.length);
+		int y = 5;//randNumberGenerator.nextInt(cells.length);
 		
-		boolean finished = false;
+		Stack<Cell> cellsVisited = new Stack<Cell>();
 		
-		while(!finished) {
+		int numCells = cells.length * cells.length;
+		
+		Cell curCell;
+		curCell = this.cells[x][y];
+		ArrayList<Integer> directions = new ArrayList<Integer>();
+		
+		while(numCells >= 0) {
+			cellsVisited.push(curCell);
+			
+			curCell.visited = true;
+			
+			if(!this.cells[x][y+1].visited) {
+				directions.add(1);
+			}else if(!this.cells[x][y-1].visited) {
+				directions.add(3);
+			}else if(!this.cells[x+1][y].visited) {
+				directions.add(2);
+			}else if(!this.cells[x-1][y].visited) {
+				directions.add(0);
+			}
+			
+			int index = randNumberGenerator.nextInt(directions.size());
+			int direction = directions.get(index);
+			
+			if(direction == 0) {
+				// Go left
+				System.out.println("going left");
+				curCell = this.cells[x-1][y];
+				curCell.hasEastWall = false;
+				curCell.visited = true;
+			}else if(direction == 1) {
+				// Go up
+				System.out.println("going up");
+				curCell.hasNorthWall = false;
+				curCell = this.cells[x][y+1];
+				curCell.visited = true;
+			}else if(direction == 2) {
+				// Go right
+				System.out.println("going right");
+				curCell.hasEastWall = false;
+				curCell = this.cells[x+1][y];
+				curCell.visited = true;
+			}else if(direction == 3) {
+				// Go down
+				System.out.println("going down");
+				curCell = this.cells[x][y-1];
+				curCell.hasNorthWall = false;
+				curCell.visited = true;
+			}
+			numCells -= 1;
+			
 			
 		}
 	}
