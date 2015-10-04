@@ -1,6 +1,6 @@
 package com.ru.tgra.shapes;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Stack;
 
@@ -12,7 +12,10 @@ public class Maze {
 	int normalLoc;
 	
 	int numberOfCells = 10;
-	public Maze(int positionLoc, int normalLoc) {
+	Random rand;
+	
+	Maze(int positionLoc, int normalLoc) {
+		rand = new Random();
 		this.positionLoc = positionLoc;
 		this.normalLoc = normalLoc;
 		cells = new Cell[numberOfCells][];
@@ -20,11 +23,18 @@ public class Maze {
 		for(int i = 0; i < cells.length; i++) {
 			cells[i] = new Cell[numberOfCells];
 			for(int j = 0; j < cells[i].length; j++) {
-				cells[i][j] = new Cell(positionLoc, normalLoc);
+				Point3D pos = new Point3D(i,0,j);
+				cells[i][j] = new Cell(positionLoc, normalLoc, pos);
 			}
 		}
 		
 		this.GenerateMaze();
+		
+		for(int i = 0; i < cells.length; i++) {
+			for(int j = 0; j < cells[i].length; j++) {
+				cells[i][j].visited = false;
+			}
+		}
 	}
 	
 	public void Draw() {
@@ -47,83 +57,162 @@ public class Maze {
 		float outerWallHeight = cells[0][0].wallHeight;
 		float outerWallThickness = cells[0][0].wallThickness;
 		
-		BoxGraphic outerWallSouth = new BoxGraphic(this.positionLoc, this.normalLoc);
-		ModelMatrix.main.pushMatrix();
-		ModelMatrix.main.addTranslation(0, outerWallHeight / 2, -outerWallLength / 2);
-		ModelMatrix.main.addScale(outerWallThickness, outerWallHeight, outerWallLength);
-		ModelMatrix.main.setShaderMatrix();
-		outerWallSouth.drawSolidCube();
-		ModelMatrix.main.popMatrix();
-		
 		BoxGraphic outerWallWest = new BoxGraphic(this.positionLoc, this.normalLoc);
 		ModelMatrix.main.pushMatrix();
-		ModelMatrix.main.addTranslation(outerWallLength / 2, outerWallHeight / 2, 0);
-		ModelMatrix.main.addScale(outerWallLength, outerWallHeight, -outerWallThickness);
+		ModelMatrix.main.addTranslation(outerWallThickness / 2, outerWallHeight / 2, -outerWallLength / 2);
+		ModelMatrix.main.addScale(outerWallThickness, outerWallHeight, outerWallLength);
 		ModelMatrix.main.setShaderMatrix();
 		outerWallWest.drawSolidCube();
+		ModelMatrix.main.popMatrix();
+		
+		BoxGraphic outerWallSouth = new BoxGraphic(this.positionLoc, this.normalLoc);
+		ModelMatrix.main.pushMatrix();
+		ModelMatrix.main.addTranslation(outerWallLength / 2 , outerWallHeight / 2, 0);
+		ModelMatrix.main.addScale(outerWallLength, outerWallHeight, -outerWallThickness);
+		ModelMatrix.main.setShaderMatrix();
+		outerWallSouth.drawSolidCube();
 		ModelMatrix.main.popMatrix();
 		
 	}
 	
 	public void GenerateMaze() {
-		Random randNumberGenerator = new Random();
-		int x = 5;//randNumberGenerator.nextInt(cells.length);
-		int y = 5;//randNumberGenerator.nextInt(cells.length);
+		int x = rand.nextInt(cells.length);
+		int y = rand.nextInt(cells.length);
 		
-		Stack<Cell> cellsVisited = new Stack<Cell>();
+		Stack<Cell> cellStack = new Stack<Cell>();
 		
-		int numCells = cells.length * cells.length;
+		Cell curCell = this.cells[x][y];
 		
-		Cell curCell;
-		curCell = this.cells[x][y];
-		ArrayList<Integer> directions = new ArrayList<Integer>();
+		// Start the procedure
+		cellStack.push(curCell);
+		curCell.visited = true;
 		
-		while(numCells >= 0) {
-			cellsVisited.push(curCell);
+		boolean[] directions = new boolean[4];
+		
+		while(!cellStack.isEmpty()) {
 			
-			curCell.visited = true;
-			
-			if(!this.cells[x][y+1].visited) {
-				directions.add(1);
-			}else if(!this.cells[x][y-1].visited) {
-				directions.add(3);
-			}else if(!this.cells[x+1][y].visited) {
-				directions.add(2);
-			}else if(!this.cells[x-1][y].visited) {
-				directions.add(0);
+			// Check adjacent cells
+			if(CellCanGoLeft(curCell)) {
+				directions[0] = true;
+			}
+			if(CellCanGoUp(curCell)) {
+				directions[1] = true;
+			}
+			if(CellCanGoRight(curCell)) {
+				directions[2] = true;
+			}
+			if(CellCanGoDown(curCell)) {
+				directions[3] = true;
 			}
 			
-			int index = randNumberGenerator.nextInt(directions.size());
-			int direction = directions.get(index);
+			if(isDeadEnd(directions)) {
+				// pop stack and continue
+				curCell = cellStack.pop();
+				continue;
+			}
+			
+			// Choose a random available direction
+			int direction = chooseDirection(directions);
+			
+			while(direction < 0) {
+				direction = chooseDirection(directions);
+			}
+			
+			// Break the wall down and go to the direction
+			int xPos = (int)curCell.position.x;
+			int zPos = (int)curCell.position.z;
 			
 			if(direction == 0) {
-				// Go left
-				System.out.println("going left");
-				curCell = this.cells[x-1][y];
+				// go left
+				curCell = cells[xPos - 1][zPos];
 				curCell.hasEastWall = false;
-				curCell.visited = true;
-			}else if(direction == 1) {
-				// Go up
-				System.out.println("going up");
+			} else if(direction == 1) {
+				// go up
 				curCell.hasNorthWall = false;
-				curCell = this.cells[x][y+1];
-				curCell.visited = true;
-			}else if(direction == 2) {
-				// Go right
-				System.out.println("going right");
+				curCell = cells[xPos][zPos + 1];
+			} else if(direction == 2) {
+				// go right
 				curCell.hasEastWall = false;
-				curCell = this.cells[x+1][y];
-				curCell.visited = true;
-			}else if(direction == 3) {
-				// Go down
-				System.out.println("going down");
-				curCell = this.cells[x][y-1];
+				curCell = cells[xPos + 1][zPos];
+			} else if(direction == 3) {
+				// go down
+				curCell = cells[xPos][zPos - 1];
 				curCell.hasNorthWall = false;
-				curCell.visited = true;
 			}
-			numCells -= 1;
+			// Mark the cell and push it
+			curCell.visited = true;
+			cellStack.push(curCell);
 			
-			
+			// Reset the directions array
+			Arrays.fill(directions, false);
 		}
+	}
+	
+	public int chooseDirection(boolean[] directions) {
+		int index = rand.nextInt(directions.length);
+		
+		if(directions[index]) {
+			return index;
+		} else {
+			return -1;
+		}
+
+	}
+	
+	public boolean isDeadEnd(boolean[] directions) {
+		for(boolean b : directions) {
+			if(b) {
+				return false;
+			}
+		}
+	    return true;
+	}
+	
+	public boolean CellCanGoLeft(Cell curCell) {
+		int xPos = (int)curCell.position.x;
+		int zPos = (int)curCell.position.z;
+		
+		if(curCell.position.x <= 0){
+			return false;
+		} else if(cells[xPos - 1][zPos].visited) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean CellCanGoUp(Cell curCell) {
+		int xPos = (int)curCell.position.x;
+		int zPos = (int)curCell.position.z;
+		
+		if(curCell.position.z >= cells.length - 1) {
+			return false;
+		} else if(cells[xPos][zPos + 1].visited) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean CellCanGoRight(Cell curCell) {
+		int xPos = (int)curCell.position.x;
+		int zPos = (int)curCell.position.z;
+		
+		if(curCell.position.x >= cells.length - 1) {
+			return false;
+		} else if(cells[xPos + 1][zPos].visited) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean CellCanGoDown(Cell curCell) {
+		int xPos = (int)curCell.position.x;
+		int zPos = (int)curCell.position.z;
+		
+		if(curCell.position.z <= 0) {
+			return false;
+		} else if(cells[xPos][zPos - 1].visited) {
+			return false;
+		}
+		return true;
 	}
 }

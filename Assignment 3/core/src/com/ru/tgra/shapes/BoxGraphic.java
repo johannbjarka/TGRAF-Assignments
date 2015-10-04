@@ -12,6 +12,8 @@ public class BoxGraphic {
 	private FloatBuffer normalBuffer;
 	private int vertexPointer;
 	private int normalPointer;
+	
+	Point3D position;
 
 	public BoxGraphic(int vertexPointer, int normalPointer) {
 		this.vertexPointer = vertexPointer;

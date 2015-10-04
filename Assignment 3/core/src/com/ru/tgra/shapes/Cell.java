@@ -14,8 +14,10 @@ public class Cell {
 	
 	boolean visited;
 	
-	public Cell(int positionLoc, int normalLoc) {
-		
+	Point3D position;
+	
+	public Cell(int positionLoc, int normalLoc, Point3D pos) {
+		this.position = pos;
 		this.northWall = new BoxGraphic(positionLoc, normalLoc);
 		this.eastWall = new BoxGraphic(positionLoc, normalLoc);
 		
@@ -26,13 +28,16 @@ public class Cell {
 		this.wallThickness = 0.1f;
 		this.wallLength = 1f;
 		this.wallHeight = 1f;
+		
+		northWall.position = new Point3D(pos.x, 0, pos.z + this.wallLength);
+		eastWall.position = new Point3D(pos.x + this.wallLength, 0, pos.z);
 	}
 	
 	public void Draw() {
 		if(hasEastWall) {
 			ModelMatrix.main.pushMatrix();
 			ModelMatrix.main.addTranslation(wallLength, wallHeight / 2, -wallLength / 2);
-			ModelMatrix.main.addScale(wallThickness, wallHeight, wallLength);
+			ModelMatrix.main.addScale(wallThickness, wallHeight, wallLength + wallThickness);
 			ModelMatrix.main.setShaderMatrix();
 			eastWall.drawSolidCube();
 			ModelMatrix.main.popMatrix();
