@@ -4,10 +4,11 @@ public class Player {
 
 	public Camera camera;
 	public Point3D position;
-	float speed;
+	float speed, maxSpeed;
 	
 	public Player(Point3D pos) {
-		this.speed = 2;
+		this.speed = 0.5f;
+		this.maxSpeed = 5;
 		this.position = pos;
 		this.camera = new Camera();
 		
@@ -18,13 +19,13 @@ public class Player {
 	}
 	
 	public void goForward(float distance) {
-		camera.Slide(0, 0, distance);
+		camera.SlideForward(distance);
 	}
 	public void goBack(float distance) {
-		camera.Slide(0, 0, distance);
+		camera.SlideForward(-distance);
 	}
 	public void goLeft(float distance) {
-		camera.Slide(distance, 0, 0);
+		camera.Slide(-distance, 0, 0);
 	}
 	public void goRight(float distance) {
 		camera.Slide(distance, 0, 0);

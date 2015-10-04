@@ -8,6 +8,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 import com.badlogic.gdx.utils.BufferUtils;
 
@@ -27,8 +28,6 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 	private int projectionMatrixLoc;
 
 	private int colorLoc;
-	
-	private Pyramid myPyramid;
 	
 	private Maze myMaze;
 	
@@ -99,12 +98,12 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		//OrthographicProjection3D(-2, 2, -2, 2, 1, 100);
 		PerspectiveProjection3D();
 		
-		Point3D startingPosition = new Point3D(0.5f, 2.0f, -0.5f);
+		Point3D startingPosition = new Point3D(0.5f, 0.5f, -0.5f);
 		
 		myPlayer = new Player(startingPosition);
 		myPlayer.camera.setShaderMatrix(viewMatrixLoc);
 		
-		myPyramid = new Pyramid(positionLoc, normalLoc);
+		new Pyramid(positionLoc, normalLoc);
 		
 		myMaze = new Maze(positionLoc, normalLoc);
 		
@@ -116,13 +115,13 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.A)) {
-			myPlayer.goLeft(-myPlayer.speed * deltaTime);
+			myPlayer.goLeft(myPlayer.speed * deltaTime);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.D)) {
 			myPlayer.goRight(myPlayer.speed * deltaTime);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.W)) {
-			myPlayer.goForward(-myPlayer.speed * deltaTime);
+			myPlayer.goForward(myPlayer.speed * deltaTime);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.S)) {
 			myPlayer.goBack(myPlayer.speed * deltaTime);
@@ -134,6 +133,58 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 	private void update()
 	{
 		//do all updates to the game
+		ArrayList<Cell> cellsToCollide = new ArrayList<Cell>();
+		
+		int xPos = (int) myPlayer.position.x;
+		int zPos = Math.abs((int) myPlayer.position.z);
+		
+		Cell playerCell = myMaze.cells[xPos][zPos];
+		
+		cellsToCollide.add(playerCell);
+		
+		if(myMaze.CellCanGoDown(playerCell)) {
+			playerCell = myMaze.cells[xPos][zPos - 1];
+			cellsToCollide.add(playerCell);
+		}
+		if(myMaze.CellCanGoLeft(playerCell)) {
+			playerCell = myMaze.cells[xPos - 1][zPos];
+			cellsToCollide.add(playerCell);
+		}
+		
+		// Loop through relevant cells and collide player with them
+		for(Cell cell : cellsToCollide) {
+			Collide(cell, myPlayer);
+		}
+		
+		cellsToCollide.clear();
+		
+		//System.out.println(cellsToCollide.get(0).position.x + " " + cellsToCollide.get(0).position.z);
+		
+	}
+	
+	private void Collide(Cell cell, Player player) {
+		
+		if(cell.hasNorthWall) {
+			if(player.position.x > cell.northWall.position.x + cell.wallLength) {
+				// This means that the player is not in the cell we are colliding with right now
+				return;
+			} else if(Math.abs(player.position.z - 0.1) >= cell.northWall.position.z - 0.05 && Math.abs(player.position.z + 0.1) <= cell.northWall.position.z) {
+				player.position.z = -cell.northWall.position.z + 0.15f;
+				
+			} else if(Math.abs(player.position.z + 0.1) <= cell.northWall.position.z + 0.05 && Math.abs(player.position.z - 0.1) >= cell.northWall.position.z) {
+				player.position.z = -cell.northWall.position.z - 0.15f;
+			}
+		}
+		if(cell.hasEastWall) {
+			if(player.position.z > cell.eastWall.position.z + cell.wallLength) {
+				// This means that the player is not in the cell we are colliding with right now
+				return;
+			} else if(player.position.x + 0.1 >= cell.eastWall.position.x - 0.05 && player.position.x - 0.1 <= cell.eastWall.position.x) {
+				player.position.x = cell.eastWall.position.x - 0.15f;
+			} else if(player.position.x - 0.1 <= cell.eastWall.position.x + 0.05 && player.position.x + 0.1 >= cell.eastWall.position.x) {
+				player.position.x = cell.eastWall.position.x + 0.15f;
+			}
+		}
 	}
 	
 	private void display()
@@ -194,7 +245,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		float[] pm = new float[16];
 		
 		float n = 0.1f;
-		float f = 1.0f;
+		float f = 0.15f;
 		
 		float eq1 = -(f+n/f-n);
 		float eq2 = -((2*f*n)/f-n);
