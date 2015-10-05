@@ -151,6 +151,12 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 			cellsToCollide.add(playerCell);
 		}
 		
+		for(Cell cell: myMaze.southWall) {
+			Collide(cell, myPlayer);
+		}
+		for(Cell cell: myMaze.westWall) {
+			Collide(cell, myPlayer);
+		}
 		// Loop through relevant cells and collide player with them
 		for(Cell cell : cellsToCollide) {
 			Collide(cell, myPlayer);
@@ -165,23 +171,23 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 	private void Collide(Cell cell, Player player) {
 		
 		if(cell.hasNorthWall) {
-			if(player.position.x > cell.northWall.position.x + cell.wallLength) {
+			if(player.position.x > cell.northWall.position.x + cell.wallLength || player.position.x < cell.northWall.position.x - cell.wallLength ) {
 				// This means that the player is not in the cell we are colliding with right now
 				return;
-			} else if(Math.abs(player.position.z - 0.1) >= cell.northWall.position.z - 0.05 && Math.abs(player.position.z + 0.1) <= cell.northWall.position.z) {
+			} else if(Math.abs(player.position.z - 0.1) >= cell.northWall.position.z - 0.05 && Math.abs(player.position.z - 0.1) <= cell.northWall.position.z) {
 				player.position.z = -cell.northWall.position.z + 0.15f;
 				
-			} else if(Math.abs(player.position.z + 0.1) <= cell.northWall.position.z + 0.05 && Math.abs(player.position.z - 0.1) >= cell.northWall.position.z) {
+			} else if(Math.abs(player.position.z + 0.1) <= cell.northWall.position.z + 0.05 && Math.abs(player.position.z + 0.1) >= cell.northWall.position.z) {
 				player.position.z = -cell.northWall.position.z - 0.15f;
 			}
 		}
 		if(cell.hasEastWall) {
-			if(player.position.z > cell.eastWall.position.z + cell.wallLength) {
+			if(Math.abs(player.position.z) > cell.eastWall.position.z + cell.wallLength || Math.abs(player.position.z) < cell.eastWall.position.z - cell.wallLength) {
 				// This means that the player is not in the cell we are colliding with right now
 				return;
-			} else if(player.position.x + 0.1 >= cell.eastWall.position.x - 0.05 && player.position.x - 0.1 <= cell.eastWall.position.x) {
+			} else if(player.position.x + 0.1 >= cell.eastWall.position.x - 0.05 && player.position.x + 0.1 <= cell.eastWall.position.x) {
 				player.position.x = cell.eastWall.position.x - 0.15f;
-			} else if(player.position.x - 0.1 <= cell.eastWall.position.x + 0.05 && player.position.x + 0.1 >= cell.eastWall.position.x) {
+			} else if(player.position.x - 0.1 <= cell.eastWall.position.x + 0.05 && player.position.x - 0.1 >= cell.eastWall.position.x) {
 				player.position.x = cell.eastWall.position.x + 0.15f;
 			}
 		}

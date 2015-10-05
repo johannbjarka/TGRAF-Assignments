@@ -7,7 +7,7 @@ public class Player {
 	float speed, maxSpeed;
 	
 	public Player(Point3D pos) {
-		this.speed = 0.5f;
+		this.speed = 1f;
 		this.maxSpeed = 5;
 		this.position = pos;
 		this.camera = new Camera();

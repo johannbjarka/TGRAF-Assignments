@@ -7,6 +7,7 @@ import java.util.Stack;
 public class Maze {
 	
 	public Cell[][] cells;
+	public Cell[] westWall, southWall;
 	
 	int positionLoc;
 	int normalLoc;
@@ -29,6 +30,20 @@ public class Maze {
 		}
 		
 		this.GenerateMaze();
+		
+		westWall = new Cell[cells.length];
+		southWall = new Cell[cells.length];
+		Point3D pos;
+		
+		for(int i = 0; i < westWall.length; i++) {
+			pos = new Point3D(-1, 0, i);
+			westWall[i] = new Cell(positionLoc, normalLoc, pos);
+			westWall[i].hasNorthWall = false;
+			
+			pos = new Point3D(i, 0, -1);
+			southWall[i] = new Cell(positionLoc, normalLoc, pos);
+			southWall[i].hasEastWall = false;
+		}
 		
 		for(int i = 0; i < cells.length; i++) {
 			for(int j = 0; j < cells[i].length; j++) {
@@ -53,25 +68,24 @@ public class Maze {
 		}
 		ModelMatrix.main.popMatrix();
 		
-		float outerWallLength = cells[0][0].wallLength * (float)numberOfCells;
-		float outerWallHeight = cells[0][0].wallHeight;
-		float outerWallThickness = cells[0][0].wallThickness;
-		
-		BoxGraphic outerWallWest = new BoxGraphic(this.positionLoc, this.normalLoc);
 		ModelMatrix.main.pushMatrix();
-		ModelMatrix.main.addTranslation(outerWallThickness / 2, outerWallHeight / 2, -outerWallLength / 2);
-		ModelMatrix.main.addScale(outerWallThickness, outerWallHeight, outerWallLength);
-		ModelMatrix.main.setShaderMatrix();
-		outerWallWest.drawSolidCube();
+		ModelMatrix.main.addTranslation(-1, 0, 1);
+		for(int i = 0; i < westWall.length; i++) {
+			ModelMatrix.main.addTranslation(0, 0, -westWall[i].wallLength);
+			ModelMatrix.main.setShaderMatrix();
+			westWall[i].Draw();
+		}
 		ModelMatrix.main.popMatrix();
 		
-		BoxGraphic outerWallSouth = new BoxGraphic(this.positionLoc, this.normalLoc);
 		ModelMatrix.main.pushMatrix();
-		ModelMatrix.main.addTranslation(outerWallLength / 2 , outerWallHeight / 2, 0);
-		ModelMatrix.main.addScale(outerWallLength, outerWallHeight, -outerWallThickness);
-		ModelMatrix.main.setShaderMatrix();
-		outerWallSouth.drawSolidCube();
+		ModelMatrix.main.addTranslation(-1, 0, 1);
+		for(int i = 0; i < southWall.length; i++) {
+			ModelMatrix.main.addTranslation(southWall[i].wallLength, 0, 0);
+			ModelMatrix.main.setShaderMatrix();
+			southWall[i].Draw();
+		}
 		ModelMatrix.main.popMatrix();
+		
 		
 	}
 	
