@@ -12,6 +12,8 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.utils.BufferUtils;
 
+import javafx.scene.shape.Box;
+
 public class MazeGame extends ApplicationAdapter implements InputProcessor {
 
 	private FloatBuffer matrixBuffer;
@@ -133,6 +135,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 	private void update()
 	{
 		//do all updates to the game
+		
 		ArrayList<Cell> cellsToCollide = new ArrayList<Cell>();
 		
 		int xPos = (int) myPlayer.position.x;
@@ -163,15 +166,12 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		}
 		
 		cellsToCollide.clear();
-		
-		//System.out.println(cellsToCollide.get(0).position.x + " " + cellsToCollide.get(0).position.z);
-		
 	}
 	
 	private void Collide(Cell cell, Player player) {
 		
 		if(cell.hasNorthWall) {
-			if(player.position.x > cell.northWall.position.x + cell.wallLength || player.position.x < cell.northWall.position.x - cell.wallLength ) {
+			if(player.position.x > cell.northWall.position.x + cell.wallLength && !cell.hasEastWall || player.position.x < cell.northWall.position.x) {
 				// This means that the player is not in the cell we are colliding with right now
 				return;
 			} else if(Math.abs(player.position.z - 0.1) >= cell.northWall.position.z - 0.05 && Math.abs(player.position.z - 0.1) <= cell.northWall.position.z) {
@@ -182,7 +182,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 			}
 		}
 		if(cell.hasEastWall) {
-			if(Math.abs(player.position.z) > cell.eastWall.position.z + cell.wallLength || Math.abs(player.position.z) < cell.eastWall.position.z - cell.wallLength) {
+			if(Math.abs(player.position.z) > cell.eastWall.position.z + cell.wallLength || Math.abs(player.position.z) < cell.eastWall.position.z) {
 				// This means that the player is not in the cell we are colliding with right now
 				return;
 			} else if(player.position.x + 0.1 >= cell.eastWall.position.x - 0.05 && player.position.x + 0.1 <= cell.eastWall.position.x) {

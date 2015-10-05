@@ -12,7 +12,7 @@ public class Maze {
 	int positionLoc;
 	int normalLoc;
 	
-	int numberOfCells = 10;
+	int numberOfCells = 5;
 	Random rand;
 	
 	Maze(int positionLoc, int normalLoc) {
