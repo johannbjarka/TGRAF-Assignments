@@ -59,6 +59,7 @@ nb-configuration.xml
 .gradle
 gradle-app.setting
 build/
+.recommenders
 
 ## OS Specific
 .DS_Store
