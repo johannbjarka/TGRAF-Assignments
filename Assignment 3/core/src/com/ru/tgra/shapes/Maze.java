@@ -12,14 +12,15 @@ public class Maze {
 	int positionLoc;
 	int normalLoc;
 	
-	int numberOfCells = 10;
+	int numberOfCells = 5;
 	Random rand;
 	
-	Maze(int positionLoc, int normalLoc) {
-		rand = new Random();
+	Maze(int positionLoc, int normalLoc, int level) {
+		this.numberOfCells = level * 5;
+		this.rand = new Random();
 		this.positionLoc = positionLoc;
 		this.normalLoc = normalLoc;
-		cells = new Cell[numberOfCells][];
+		this.cells = new Cell[numberOfCells][];
 
 		for(int i = 0; i < cells.length; i++) {
 			cells[i] = new Cell[numberOfCells];

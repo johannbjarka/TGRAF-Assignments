@@ -28,9 +28,11 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 	
 	Random rand;
 	
+	int level;
+	
 	@Override
 	public void create () {
-		
+		level = 1;
 		shader = new Shader();
 		rand = new Random();
 		
@@ -48,25 +50,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 
 		//OrthographicProjection3D(-2, 2, -2, 2, 1, 100);
 		PerspectiveProjection3D();
-		myMaze = new Maze(shader.getVertexPointer(), shader.getNormalPointer());
-		
-		Point3D startingPosition = new Point3D(rand.nextInt(myMaze.cells.length) + 0.5f, 0.5f, -rand.nextInt(myMaze.cells.length) - 0.5f);
-
-		myPlayer = new Player(startingPosition);
-		myPlayer.camera.setShaderMatrix(shader.getViewMatrixPointer());
-		
-		pyramids = new ArrayList<Pyramid>();
-		
-		for(int i = 0; i < myMaze.cells.length; i++) {
-			Point3D pos = new Point3D(0, 0.1f, 0);
-			pos.x = rand.nextInt(myMaze.cells.length) + 0.5f;
-			pos.z = -rand.nextInt(myMaze.cells.length) - 0.5f;
-			
-			Pyramid newPyr = new Pyramid(shader, pos);
-			pyramids.add(newPyr);
-		}
-		
-		pyramids.get(rand.nextInt(pyramids.size())).golden = true;
+		newLevel();
 		
 		Gdx.input.setCursorCatched(true);
 	}
@@ -163,7 +147,9 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		cellsToCollide.clear();
 		
 		// Collision with pyramid objects
-		
+		for(Pyramid pyr : pyramids) {
+			pyramidCollide(myPlayer, pyr);
+		}
 	}
 	
 	private void Collide(Cell cell, Player player) {
@@ -273,6 +259,11 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		float distanceSquared = deltaX * deltaX + deltaY * deltaY;
 		
 		if(distanceSquared < (thePlayer.radius + thePyramid.radius) * (thePlayer.radius + thePyramid.radius)) {
+			if(thePyramid.golden) {
+				System.out.println("GOLDEN PYRAMID FOUND");
+				newLevel();
+				return;
+			}
 			// Collision
 			if(thePlayer.position.z <= thePyramid.position.z - thePyramid.position.z - (thePyramid.spaceBetweenBlocks * 4.5f) && thePlayer.position.z >= thePyramid.position.z + thePyramid.position.z + (thePyramid.spaceBetweenBlocks * 4.5f)) {
 				// Collide on x axis
@@ -294,6 +285,33 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 			}
 			
 		}
+	}
+	
+	public void newLevel() {
+		System.out.println("NEW LEVEL");
+		myMaze = new Maze(shader.getVertexPointer(), shader.getNormalPointer(), this.level);
+		
+		System.out.println("NUMBER OF CELLS: " + myMaze.cells.length);
+		
+		Point3D startingPosition = new Point3D(rand.nextInt(myMaze.cells.length) + 0.5f, 0.5f, -rand.nextInt(myMaze.cells.length) - 0.5f);
+
+		myPlayer = new Player(startingPosition);
+		myPlayer.camera.setShaderMatrix(shader.getViewMatrixPointer());
+		
+		pyramids = new ArrayList<Pyramid>();
+		
+		for(int i = 0; i < myMaze.cells.length; i++) {
+			Point3D pos = new Point3D(0, 0.1f, 0);
+			pos.x = rand.nextInt(myMaze.cells.length) + 0.5f;
+			pos.z = -rand.nextInt(myMaze.cells.length) - 0.5f;
+			
+			Pyramid newPyr = new Pyramid(shader, pos);
+			pyramids.add(newPyr);
+		}
+		
+		pyramids.get(rand.nextInt(pyramids.size())).golden = true;
+		
+		this.level++;
 	}
 	
 	@Override
