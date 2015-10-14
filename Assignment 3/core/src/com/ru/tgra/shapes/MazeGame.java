@@ -113,6 +113,22 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 				cellsToCollide.add(playerCell);
 			}
 		}
+		if(!(xPos <= 0) && !(zPos <= 0)) {
+			playerCell = myMaze.cells[xPos - 1][zPos - 1];
+			cellsToCollide.add(playerCell);
+		}
+		if(!(xPos <= 0) && !(zPos + 1 >= myMaze.cells[xPos].length)) {
+			playerCell = myMaze.cells[xPos - 1][zPos + 1];
+			cellsToCollide.add(playerCell);
+		}
+		if(!(xPos + 1 >= myMaze.cells[xPos].length) && !(zPos + 1 >= myMaze.cells[xPos].length)) {
+			playerCell = myMaze.cells[xPos + 1][zPos + 1];
+			cellsToCollide.add(playerCell);
+		}
+		if(!(xPos + 1 >= myMaze.cells[xPos].length) && !(zPos <= 0)) {
+			playerCell = myMaze.cells[xPos + 1][zPos - 1];
+			cellsToCollide.add(playerCell);
+		}
 		
 		for(Cell cell: myMaze.southWall) {
 			Collide(cell, myPlayer);
@@ -129,10 +145,6 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 	}
 	
 	private void Collide(Cell cell, Player player) {
-		//System.out.println("Cell x,z: " + cell.position.x + ", " + cell.position.z);
-		//System.out.println("Player x,z: " + player.position.x + ", " + player.position.z);
-		//System.out.println("North x,z: " + cell.northWall.position.x + ", " + cell.northWall.position.z + " \n East x,z: " + cell.eastWall.position.x + ", " + cell.eastWall.position.z);
-		
 		if(cell.hasNorthWall) {
 			// Check if player is trying to walk into the side of the wall
 			if(Math.abs(player.position.z) >= cell.northWall.position.z - 0.05f && Math.abs(player.position.z) <= cell.northWall.position.z + 0.05f) {
@@ -164,16 +176,12 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 			// Check if player is trying to walk into the side of the wall
 			if(player.position.x >= cell.eastWall.position.x - 0.05f && player.position.x <= cell.eastWall.position.x + 0.05f) {
 				if(Math.abs(player.position.z) >= (Math.abs(cell.eastWall.position.z) - 0.14f) && (Math.abs(player.position.z) <= (Math.abs(cell.eastWall.position.z) + cell.wallLength / 2))) {
-					System.out.println("YOLO SWAG");
-					System.out.println("COLLISION: " + player.position.z + ", " + cell.eastWall.position.z);
 					player.position.z = -(cell.eastWall.position.z - 0.15f);
 				}
 			}
 			// Check from the other side of the wall
 			if(player.position.x >= cell.eastWall.position.x - 0.05f && player.position.x <= cell.eastWall.position.x + 0.05f) {
 				if(Math.abs(player.position.z) <= (Math.abs(cell.eastWall.position.z) + cell.wallLength + 0.14f) && (Math.abs(player.position.z) >= (Math.abs(cell.eastWall.position.z) + cell.wallLength / 2))) {
-					System.out.println("SWAG YOLO");
-					System.out.println("COLLISION: " + player.position.z + ", " + cell.eastWall.position.z);
 					player.position.z = -(cell.eastWall.position.z + cell.wallLength + 0.15f);
 				}
 			}
