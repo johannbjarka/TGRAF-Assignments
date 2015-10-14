@@ -6,14 +6,18 @@ public class Pyramid {
 	Point3D position, startPos;
 	BoxGraphic newBox;
 	public boolean breatheOut;
+	Shader shader;
+	public boolean golden;
 	
-	public Pyramid(int positionLoc, int normalLoc, Point3D pos) {
-		this.spaceBetweenBlocks = 0.04f;
+	public Pyramid(Shader shader, Point3D pos) {
+		this.shader = shader;
+		this.spaceBetweenBlocks = 0.05f;
 		this.position = new Point3D(pos);
 		this.startPos = new Point3D(pos);
-		this.newBox = new BoxGraphic(positionLoc, normalLoc);
+		this.newBox = new BoxGraphic(shader.getVertexPointer(), shader.getNormalPointer());
 		this.breatheOut = true;
 		this.radius = 0.1f;
+		this.golden = false;
 	}
 
 	public void Draw() {

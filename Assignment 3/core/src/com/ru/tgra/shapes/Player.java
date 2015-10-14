@@ -13,7 +13,7 @@ public class Player {
 		this.camera = new Camera();
 		this.radius = 0.1f;
 		
-		Point3D center = new Point3D(0,0,0);
+		Point3D center = new Point3D(0.5f,0.1f,1.5f);
 		Vector3D upVector = new Vector3D(0,1,0);
 		
 		this.camera.Look3D(position, center, upVector);
