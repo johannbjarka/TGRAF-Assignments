@@ -8,6 +8,8 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.Random;
+
 import com.badlogic.gdx.utils.BufferUtils;
 
 public class MazeGame extends ApplicationAdapter implements InputProcessor {
@@ -20,12 +22,17 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 	
 	private Player myPlayer;
 	
-	private Pyramid myPyramid;
+	private ArrayList<Pyramid> pyramids;
+	
+	private Pyramid goldenPyramid;
+	
+	Random rand;
 	
 	@Override
 	public void create () {
 		
 		shader = new Shader();
+		rand = new Random();
 		
 		Gdx.input.setInputProcessor(this);
 
@@ -41,15 +48,25 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 
 		//OrthographicProjection3D(-2, 2, -2, 2, 1, 100);
 		PerspectiveProjection3D();
+		myMaze = new Maze(shader.getVertexPointer(), shader.getNormalPointer());
 		
-		Point3D startingPosition = new Point3D(0.5f, 0.5f, -0.5f);
-		
+		Point3D startingPosition = new Point3D(rand.nextInt(myMaze.cells.length) + 0.5f, 0.5f, -rand.nextInt(myMaze.cells.length) - 0.5f);
+
 		myPlayer = new Player(startingPosition);
 		myPlayer.camera.setShaderMatrix(shader.getViewMatrixPointer());
 		
-		myMaze = new Maze(shader.getVertexPointer(), shader.getNormalPointer());
+		pyramids = new ArrayList<Pyramid>();
 		
-		myPyramid = new Pyramid(shader.getVertexPointer(), shader.getNormalPointer(), new Point3D(1.5f, 0.1f, -1.5f));
+		for(int i = 0; i < myMaze.cells.length; i++) {
+			Point3D pos = new Point3D(0, 0.1f, 0);
+			pos.x = rand.nextInt(myMaze.cells.length) + 0.5f;
+			pos.z = -rand.nextInt(myMaze.cells.length) - 0.5f;
+			
+			Pyramid newPyr = new Pyramid(shader, pos);
+			pyramids.add(newPyr);
+		}
+		
+		pyramids.get(rand.nextInt(pyramids.size())).golden = true;
 		
 		Gdx.input.setCursorCatched(true);
 	}
@@ -145,8 +162,8 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		
 		cellsToCollide.clear();
 		
-		// Collision with pyramid object
-		pyramidCollide(myPlayer, myPyramid);
+		// Collision with pyramid objects
+		
 	}
 	
 	private void Collide(Cell cell, Player player) {
@@ -238,10 +255,15 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 			}
 		}
 		*/
-		
-		myPyramid.Draw();
-		
-		
+		for(Pyramid pyr : pyramids) {
+			shader.setMaterialSpecular(0.5f, 0.5f, 0.5f, 1.0f);
+			if(pyr.golden){
+				pyr.shader.setMaterialEmission(1.0f, 0.84f, 0.0f, 1.0f);
+			} else {
+				pyr.shader.setMaterialEmission(0.55f, 0.55f, 0.55f, 1.0f);
+			}
+			pyr.Draw();
+		}	
 	}
 	
 	public void pyramidCollide(Player thePlayer, Pyramid thePyramid) {
@@ -252,7 +274,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		
 		if(distanceSquared < (thePlayer.radius + thePyramid.radius) * (thePlayer.radius + thePyramid.radius)) {
 			// Collision
-			if(thePlayer.position.z >= thePyramid.position.z && thePlayer.position.z <= thePyramid.position.z + (thePyramid.spaceBetweenBlocks * 4.5f)) {
+			if(thePlayer.position.z <= thePyramid.position.z - thePyramid.position.z - (thePyramid.spaceBetweenBlocks * 4.5f) && thePlayer.position.z >= thePyramid.position.z + thePyramid.position.z + (thePyramid.spaceBetweenBlocks * 4.5f)) {
 				// Collide on x axis
 				System.out.println("X Collision");
 				if(thePlayer.position.x < thePyramid.position.x) {
@@ -261,7 +283,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 					thePlayer.position.x = thePyramid.position.x + 0.2f;
 				}
 			}
-			else if(thePlayer.position.x >= thePyramid.position.x - (thePyramid.spaceBetweenBlocks * 4.5f) && thePlayer.position.x <= thePyramid.position.x + (thePyramid.spaceBetweenBlocks * 4.5f)) {
+			if(thePlayer.position.x <= thePyramid.position.x + thePyramid.position.x + (thePyramid.spaceBetweenBlocks * 4.5f) && thePlayer.position.x >= thePyramid.position.x - thePyramid.position.x - (thePyramid.spaceBetweenBlocks * 4.5f)) {
 				// Collide on z axis
 				System.out.println("Z Collision");
 				if(thePlayer.position.z < thePyramid.position.z) {
@@ -311,7 +333,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		float[] pm = new float[16];
 		
 		float n = 0.01f;
-		float f = 0.8f;
+		float f = 0.1f;
 		
 		float eq1 = -(f+n/f-n);
 		float eq2 = -((2*f*n)/f-n);
