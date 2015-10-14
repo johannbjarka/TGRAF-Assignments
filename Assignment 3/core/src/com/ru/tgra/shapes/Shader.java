@@ -19,8 +19,11 @@ public class Shader {
 	
 	private int globalAmbLoc;
 	//private int colorLoc;
-	private int lightPositionLoc;
-	private int lightColorLoc;
+	private int lightPosition1Loc;
+	private int lightPosition2Loc;
+	private int spotDirectionLoc;
+	private int lightColor1Loc;
+	private int lightColor2Loc;
 	private int materialDiffuseLoc;
 	private int materialSpecLoc;
 	private int materialEmisLoc;
@@ -67,8 +70,11 @@ public class Shader {
 		eyePositionLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_eyePosition");
 		//colorLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_color");
 		globalAmbLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_globalAmbient");
-		lightPositionLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightPosition");
-		lightColorLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightColor");
+		lightPosition1Loc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightPosition1");
+		lightColor1Loc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightColor1");
+		lightPosition2Loc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightPosition2");
+		spotDirectionLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_spotDirection");
+		lightColor2Loc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightColor2");
 		materialDiffuseLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialDiffuse");
 		materialSpecLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialSpecular");
 		materialShininessLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialShininess");
@@ -81,14 +87,23 @@ public class Shader {
 	public void setEyePosition(float x, float y, float z, float w) {
 		Gdx.gl.glUniform4f(eyePositionLoc, x, y, z, w);
 	}
-	public void setLightPosition(float x, float y, float z, float w) {
-		Gdx.gl.glUniform4f(lightPositionLoc, x, y, z, w);
-	}
 	public void setGlobalAmbient(float red, float green, float blue, float alpha) {
 		Gdx.gl.glUniform4f(globalAmbLoc, red, green, blue, alpha);
 	}
-	public void setLightColor(float red, float green, float blue, float alpha) {
-		Gdx.gl.glUniform4f(lightColorLoc, red, green, blue, alpha);
+	public void setLightPosition1(float x, float y, float z, float w) {
+		Gdx.gl.glUniform4f(lightPosition1Loc, x, y, z, w);
+	}
+	public void setLightColor1(float red, float green, float blue, float alpha) {
+		Gdx.gl.glUniform4f(lightColor1Loc, red, green, blue, alpha);
+	}
+	public void setLightPosition2(float x, float y, float z, float w) {
+		Gdx.gl.glUniform4f(lightPosition2Loc, x, y, z, w);
+	}
+	public void setSpotDirection(float x, float y, float z, float w) {
+		Gdx.gl.glUniform4f(spotDirectionLoc, x, y, z, w);
+	}
+	public void setLightColor2(float red, float green, float blue, float alpha) {
+		Gdx.gl.glUniform4f(lightColor2Loc, red, green, blue, alpha);
 	}
 	public void setMaterialDiffuse(float red, float green, float blue, float alpha) {
 		Gdx.gl.glUniform4f(materialDiffuseLoc, red, green, blue, alpha);

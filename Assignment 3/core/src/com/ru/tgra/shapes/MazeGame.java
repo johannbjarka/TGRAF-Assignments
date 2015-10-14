@@ -214,12 +214,16 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 
 		//shader.setEyePosition(1.0f, 1.0f, 1.0f, 0.8f);
 		shader.setEyePosition(myPlayer.position.x, myPlayer.position.y, myPlayer.position.z, 1.0f);
-		shader.setLightPosition(myPlayer.position.x, myPlayer.position.y, myPlayer.position.z, 1.0f);
+		shader.setLightPosition1(myPlayer.position.x, myPlayer.position.y, myPlayer.position.z, 1.0f);
+		shader.setLightPosition2(goldenPyramid.position.x, goldenPyramid.position.y, goldenPyramid.position.z, 1.0f);
 		//shader.setLightPosition(1.0f, 1.0f, 1.0f, 0.8f);
 		
 		shader.setGlobalAmbient(0.1f, 0.1f, 0.1f, 1);
 		
-		shader.setLightColor(1.0f, 1.0f, 1.0f, 1.0f);
+		// Make the golden light shine straight up
+		shader.setSpotDirection(0.0f, 1.0f, 0.0f, 0.f);
+		shader.setLightColor1(1.0f, 1.0f, 1.0f, 1.0f);
+		shader.setLightColor2(1.0f, 0.84f, 0.0f, 1.0f);
 		shader.setMaterialDiffuse(0.3f, 0.3f, 0.7f, 1.0f);
 		shader.setMaterialSpecular(0.05f, 0.05f, 0.05f, 1.0f);
 		shader.setMaterialEmission(0.0f, 0.0f, 0.0f, 1.0f);
@@ -246,7 +250,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 			if(pyr.golden){
 				pyr.shader.setMaterialEmission(1.0f, 0.84f, 0.0f, 1.0f);
 			} else {
-				pyr.shader.setMaterialEmission(0.55f, 0.55f, 0.55f, 1.0f);
+				pyr.shader.setMaterialEmission(0.25f, 0.25f, 0.25f, 1.0f);
 			}
 			pyr.Draw();
 		}	
@@ -308,7 +312,8 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 			pyramids.add(newPyr);
 		}
 		
-		pyramids.get(rand.nextInt(pyramids.size())).golden = true;
+		goldenPyramid = pyramids.get(rand.nextInt(pyramids.size()));
+		goldenPyramid.golden = true;
 		
 		this.level++;
 	}

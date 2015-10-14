@@ -14,11 +14,14 @@ uniform vec4 u_eyePosition;
 
 uniform vec4 u_globalAmbient;
 
-uniform vec4 u_lightPosition;
+uniform vec4 u_lightPosition1;
+uniform vec4 u_lightPosition2;
 
 varying vec4 v_normal;
-varying vec4 v_s;
-varying vec4 v_h;
+varying vec4 v_s1;
+varying vec4 v_h1;
+varying vec4 v_s2;
+varying vec4 v_h2;
 
 void main()
 {
@@ -28,17 +31,16 @@ void main()
 	vec4 normal = vec4(a_normal.x, a_normal.y, a_normal.z, 0.0);
 	normal = u_modelMatrix * normal;
 	
-	// Global coordinates
-	
 	// Preparation for lighting
 	vec4 v = u_eyePosition - position; // Direction to the camera
 	
-	// For each light
 	v_normal = normal;
-	v_s = u_lightPosition - position; // Direction to the light
-	
-	v_h = v_s + v;
-	
+	// For each light
+	v_s1 = u_lightPosition1 - position; // Direction to the light	
+	v_h1 = v_s1 + v;
+
+	v_s2 = u_lightPosition2 - position; // Direction to the light
+	v_h2 = v_s2 + v;
 	// End for each light 
 	
 	position = u_viewMatrix * position;
