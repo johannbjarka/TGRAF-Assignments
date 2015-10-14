@@ -2,17 +2,26 @@ package com.ru.tgra.shapes;
 
 public class Pyramid {
 	
-	public float spaceBetweenBlocks;
-	Point3D position;
+	public float spaceBetweenBlocks, radius;
+	Point3D position, startPos;
 	BoxGraphic newBox;
+	public boolean breatheOut;
 	
-	public Pyramid(int positionLoc, int normalLoc) {
-		this.spaceBetweenBlocks = 1.3f;
-		this.position = new Point3D(0,0,0);
+	public Pyramid(int positionLoc, int normalLoc, Point3D pos) {
+		this.spaceBetweenBlocks = 0.04f;
+		this.position = new Point3D(pos);
+		this.startPos = new Point3D(pos);
 		this.newBox = new BoxGraphic(positionLoc, normalLoc);
+		this.breatheOut = true;
+		this.radius = 0.1f;
 	}
 
 	public void Draw() {
+		
+		drawCubeAtPos();
+		
+		position.x -= spaceBetweenBlocks * (9/2) + spaceBetweenBlocks / 2;
+		position.z -= spaceBetweenBlocks * (9/2) + spaceBetweenBlocks / 2;
 		
 		drawCubeLine(9, 1);
 		drawCubeLine(9, 3);
@@ -90,7 +99,7 @@ public class Pyramid {
 		drawCubeLine(1, 1);
 		
 		// Reset position so pyramid won't fly off somewhere
-		this.position = new Point3D(0,0,0);
+		this.position = new Point3D(this.startPos);
 	}
 	
 	public void drawCubeLine(int num, int direction) {
@@ -126,7 +135,7 @@ public class Pyramid {
 	public void drawCubeAtPos() {
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.addTranslation(position.x, position.y, position.z);
-		ModelMatrix.main.addScale(1f, 1f, 1f);
+		ModelMatrix.main.addScale(0.03f, 0.03f, 0.03f);
 		ModelMatrix.main.setShaderMatrix();
 		newBox.drawSolidCube();
 		ModelMatrix.main.popMatrix();

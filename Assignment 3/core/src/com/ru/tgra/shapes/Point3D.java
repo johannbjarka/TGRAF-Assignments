@@ -12,7 +12,12 @@ public class Point3D {
 		this.y = 0;
 		this.z = 0;
 	}
-
+	
+	public Point3D(Point3D point) {
+		this.x = point.x;
+		this.y = point.y;
+		this.z = point.z;
+	}
 	public Point3D(float x, float y, float z)
 	{
 		this.x = x;
