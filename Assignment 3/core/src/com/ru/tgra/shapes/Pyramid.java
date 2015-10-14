@@ -14,12 +14,12 @@ public class Pyramid {
 	
 	public Pyramid(Shader shader, Point3D pos) {
 		this.shader = shader;
-		this.spaceBetweenBlocks = 0.05f;
+		this.spaceBetweenBlocks = 0.03f;
 		this.position = new Point3D(pos);
 		this.startPos = new Point3D(pos);
 		this.newBox = new BoxGraphic(shader.getVertexPointer(), shader.getNormalPointer());
 		this.breatheOut = true;
-		this.radius = 0.1f;
+		this.radius = 0.05f;
 		this.golden = false;
 	}
 
@@ -145,7 +145,7 @@ public class Pyramid {
 			angle += 0.5f;
 			ModelMatrix.main.pushMatrix();
 			ModelMatrix.main.addTranslation(position.x, position.y, position.z);
-			ModelMatrix.main.addScale(0.03f, 0.03f, 0.03f);
+			ModelMatrix.main.addScale(0.02f, 0.02f, 0.02f);
 			ModelMatrix.main.addRotationY(angle);
 			ModelMatrix.main.setShaderMatrix();
 			newBox.drawSolidCube();

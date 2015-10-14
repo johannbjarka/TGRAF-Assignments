@@ -268,18 +268,18 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 				// Collide on x axis
 				System.out.println("X Collision");
 				if(thePlayer.position.x < thePyramid.position.x) {
-					thePlayer.position.x = thePyramid.position.x - 0.2f;
+					thePlayer.position.x = thePyramid.position.x - 0.1f;
 				} else if(thePlayer.position.x > thePyramid.position.x) {
-					thePlayer.position.x = thePyramid.position.x + 0.2f;
+					thePlayer.position.x = thePyramid.position.x + 0.1f;
 				}
 			}
 			if(thePlayer.position.x <= thePyramid.position.x + thePyramid.position.x + (thePyramid.spaceBetweenBlocks * 4.5f) && thePlayer.position.x >= thePyramid.position.x - thePyramid.position.x - (thePyramid.spaceBetweenBlocks * 4.5f)) {
 				// Collide on z axis
 				System.out.println("Z Collision");
 				if(thePlayer.position.z < thePyramid.position.z) {
-					thePlayer.position.z = thePyramid.position.z - 0.2f;
+					thePlayer.position.z = thePyramid.position.z - 0.1f;
 				} else if(thePlayer.position.z > thePyramid.position.z) {
-					thePlayer.position.z = thePyramid.position.z + 0.2f;
+					thePlayer.position.z = thePyramid.position.z + 0.1f;
 				}
 			}
 			
