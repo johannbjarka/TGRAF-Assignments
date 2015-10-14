@@ -222,6 +222,10 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		
 		// Make the golden light shine straight up
 		shader.setSpotDirection(0.0f, 1.0f, 0.0f, 0.f);
+		// Make it so the light illuminates the ceiling above it and gives 
+		// only a slight hint outside the cell on where the golden pyramid is.
+		shader.setSpotExponent(5.0f);
+		
 		shader.setLightColor1(1.0f, 1.0f, 1.0f, 1.0f);
 		shader.setLightColor2(1.0f, 0.84f, 0.0f, 1.0f);
 		shader.setMaterialDiffuse(0.3f, 0.3f, 0.7f, 1.0f);
@@ -246,11 +250,18 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		}
 		*/
 		for(Pyramid pyr : pyramids) {
-			shader.setMaterialSpecular(0.5f, 0.5f, 0.5f, 1.0f);
+			
+			pyr.shader.setMaterialDiffuse(0.5f, 0.5f, 0.5f, 1.0f);
 			if(pyr.golden){
+				pyr.shader.setMaterialSpecular(0.6f, 0.6f, 0.6f, 1.0f);
+				// We set gold colored emission to make it glow
 				pyr.shader.setMaterialEmission(1.0f, 0.84f, 0.0f, 1.0f);
+				pyr.shader.setShininess(10.0f);
 			} else {
-				pyr.shader.setMaterialEmission(0.25f, 0.25f, 0.25f, 1.0f);
+				pyr.shader.setMaterialSpecular(0.8f, 0.8f, 0.8f, 1.0f);
+				// We set silver colored emission to make it glow
+				pyr.shader.setMaterialEmission(0.3f, 0.3f, 0.3f, 1.0f);
+				pyr.shader.setShininess(10.0f);
 			}
 			pyr.Draw();
 		}	
@@ -303,8 +314,8 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		
 		for(int i = 0; i < myMaze.cells.length; i++) {
 			Point3D pos = new Point3D(0, 0.1f, 0);
-			pos.x = rand.nextInt(myMaze.cells.length) + 0.5f;
-			pos.z = -rand.nextInt(myMaze.cells.length) - 0.5f;
+			pos.x = rand.nextInt(myMaze.cells.length - 1) + 0.5f;
+			pos.z = -rand.nextInt(myMaze.cells.length - 1) - 0.5f;
 			
 			Pyramid newPyr = new Pyramid(shader, pos);
 			pyramids.add(newPyr);
