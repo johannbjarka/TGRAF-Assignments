@@ -4,13 +4,14 @@ public class Player {
 
 	public Camera camera;
 	public Point3D position;
-	float speed, maxSpeed;
+	public float speed, maxSpeed, radius;
 	
 	public Player(Point3D pos) {
 		this.speed = 1f;
 		this.maxSpeed = 5;
 		this.position = pos;
 		this.camera = new Camera();
+		this.radius = 0.1f;
 		
 		Point3D center = new Point3D(0,0,0);
 		Vector3D upVector = new Vector3D(0,1,0);
