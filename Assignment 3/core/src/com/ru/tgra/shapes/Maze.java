@@ -11,22 +11,23 @@ public class Maze {
 	
 	int positionLoc;
 	int normalLoc;
-	
+	Shader shader;
 	int numberOfCells = 5;
 	Random rand;
 	
-	Maze(int positionLoc, int normalLoc, int level) {
+	Maze(Shader shader, int level) {
+		this.shader = shader;
 		this.numberOfCells = level * 5;
 		this.rand = new Random();
-		this.positionLoc = positionLoc;
-		this.normalLoc = normalLoc;
+		this.positionLoc = shader.getVertexPointer();
+		this.normalLoc = shader.getNormalPointer();
 		this.cells = new Cell[numberOfCells][];
 
 		for(int i = 0; i < cells.length; i++) {
 			cells[i] = new Cell[numberOfCells];
 			for(int j = 0; j < cells[i].length; j++) {
 				Point3D pos = new Point3D(i,0,j);
-				cells[i][j] = new Cell(positionLoc, normalLoc, pos);
+				cells[i][j] = new Cell(shader, pos);
 			}
 		}
 		
@@ -38,11 +39,11 @@ public class Maze {
 		
 		for(int i = 0; i < westWall.length; i++) {
 			pos = new Point3D(-1, 0, i);
-			westWall[i] = new Cell(positionLoc, normalLoc, pos);
+			westWall[i] = new Cell(shader, pos);
 			westWall[i].hasNorthWall = false;
 			
 			pos = new Point3D(i, 0, -1);
-			southWall[i] = new Cell(positionLoc, normalLoc, pos);
+			southWall[i] = new Cell(shader, pos);
 			southWall[i].hasEastWall = false;
 		}
 		

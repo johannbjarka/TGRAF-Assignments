@@ -1,7 +1,5 @@
 package com.ru.tgra.shapes;
 
-import com.badlogic.gdx.Gdx;
-
 public class Cell {
 	
 	BoxGraphic northWall;
@@ -15,14 +13,14 @@ public class Cell {
 	boolean hasEastWall;
 	
 	boolean visited;
-	private int colorLoc;
-	
+	Shader shader;
 	Point3D position;
 	
-	public Cell(int positionLoc, int normalLoc, Point3D pos) {
+	public Cell(Shader shader, Point3D pos) {
+		this.shader = shader;
 		this.position = pos;
-		this.northWall = new BoxGraphic(positionLoc, normalLoc);
-		this.eastWall = new BoxGraphic(positionLoc, normalLoc);
+		this.northWall = new BoxGraphic(shader.getVertexPointer(),shader.getNormalPointer());
+		this.eastWall = new BoxGraphic(shader.getVertexPointer(),shader.getNormalPointer());
 		
 		this.hasEastWall = true;
 		this.hasNorthWall = true;
@@ -41,6 +39,7 @@ public class Cell {
 			ModelMatrix.main.pushMatrix();
 			ModelMatrix.main.addTranslation(wallLength, wallHeight / 2, -wallLength / 2);
 			ModelMatrix.main.addScale(wallThickness, wallHeight, wallLength + wallThickness);
+			shader.setMaterialDiffuse(0.48f, 0.45f, 0.37f, 1.0f);
 			ModelMatrix.main.setShaderMatrix();
 			eastWall.drawSolidCube();
 			ModelMatrix.main.popMatrix();
@@ -50,6 +49,7 @@ public class Cell {
 			ModelMatrix.main.pushMatrix();
 			ModelMatrix.main.addTranslation(wallLength / 2, wallHeight / 2, -wallLength);
 			ModelMatrix.main.addScale(wallLength, wallHeight, wallThickness);
+			shader.setMaterialDiffuse(0.48f, 0.45f, 0.37f, 1.0f);
 			ModelMatrix.main.setShaderMatrix();
 			northWall.drawSolidCube();
 			ModelMatrix.main.popMatrix();
@@ -57,6 +57,7 @@ public class Cell {
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.addTranslation(wallLength / 2, 0, -wallLength / 2);
 		ModelMatrix.main.addScale(wallLength, 0.1f, wallLength);
+		shader.setMaterialDiffuse(0.54f, 0.27f, 0.07f, 1.0f);
 		ModelMatrix.main.setShaderMatrix();
 		northWall.drawSolidCube();
 		ModelMatrix.main.popMatrix();
@@ -64,6 +65,7 @@ public class Cell {
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.addTranslation(wallLength / 2, wallHeight, -wallLength / 2);
 		ModelMatrix.main.addScale(wallLength, 0.1f, wallLength);
+		shader.setMaterialDiffuse(0.48f, 0.45f, 0.37f, 1.0f);
 		ModelMatrix.main.setShaderMatrix();
 		northWall.drawSolidCube();
 		ModelMatrix.main.popMatrix();

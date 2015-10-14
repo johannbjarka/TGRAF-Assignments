@@ -290,7 +290,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 	
 	public void newLevel() {
 		System.out.println("NEW LEVEL");
-		myMaze = new Maze(shader.getVertexPointer(), shader.getNormalPointer(), this.level);
+		myMaze = new Maze(shader, this.level);
 		
 		System.out.println("NUMBER OF CELLS: " + myMaze.cells.length);
 		
