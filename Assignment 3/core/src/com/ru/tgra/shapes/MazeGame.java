@@ -206,9 +206,12 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		shader.setLightPosition(myPlayer.position.x, myPlayer.position.y, myPlayer.position.z, 0.8f);
 		//shader.setLightPosition(1.0f, 1.0f, 1.0f, 0.8f);
 		
-		shader.setLightDiffuse(0.1f, 1.0f, 1.0f, 0.0f);
-		shader.setMaterialDiffuse(0.2f, 0.1f, 0.8f, 0.0f);
-		shader.setShininess(50.0f);
+		shader.setGlobalAmbient(0.1f, 0.1f, 0.1f, 1);
+		
+		shader.setLightColor(1.0f, 1.0f, 1.0f, 0.0f);
+		shader.setMaterialDiffuse(0.3f, 0.3f, 0.7f, 0.0f);
+		shader.setMaterialSpecular(0.2f, 0.2f, 0.2f, 0.0f);
+		shader.setShininess(30.0f);
 		
 		ModelMatrix.main.loadIdentityMatrix();
 		

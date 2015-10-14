@@ -16,10 +16,14 @@ public class Shader {
 	private int projectionMatrixLoc;
 
 	private int eyePositionLoc;
+	
+	private int globalAmbLoc;
 	//private int colorLoc;
 	private int lightPositionLoc;
-	private int lightDiffuseLoc;
+	private int lightColorLoc;
 	private int materialDiffuseLoc;
+	private int materialSpecLoc;
+	
 	private int materialShininessLoc;
 	
 	
@@ -61,10 +65,11 @@ public class Shader {
 		
 		eyePositionLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_eyePosition");
 		//colorLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_color");
+		globalAmbLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_globalAmbient");
 		lightPositionLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightPosition");
-		lightDiffuseLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightDiffuse");
+		lightColorLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightColor");
 		materialDiffuseLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialDiffuse");
-		
+		materialSpecLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialSpecular");
 		materialShininessLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialShininess");
 		
 
@@ -77,11 +82,17 @@ public class Shader {
 	public void setLightPosition(float x, float y, float z, float w) {
 		Gdx.gl.glUniform4f(lightPositionLoc, x, y, z, w);
 	}
-	public void setLightDiffuse(float red, float green, float blue, float alpha) {
-		Gdx.gl.glUniform4f(lightDiffuseLoc, red, green, blue, alpha);
+	public void setGlobalAmbient(float red, float green, float blue, float alpha) {
+		Gdx.gl.glUniform4f(globalAmbLoc, red, green, blue, alpha);
+	}
+	public void setLightColor(float red, float green, float blue, float alpha) {
+		Gdx.gl.glUniform4f(lightColorLoc, red, green, blue, alpha);
 	}
 	public void setMaterialDiffuse(float red, float green, float blue, float alpha) {
 		Gdx.gl.glUniform4f(materialDiffuseLoc, red, green, blue, alpha);
+	}
+	public void setMaterialSpecular(float red, float green, float blue, float alpha) {
+		Gdx.gl.glUniform4f(materialSpecLoc, red, green, blue, alpha);
 	}
 	
 	public void setShininess(float shine) {
