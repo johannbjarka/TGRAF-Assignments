@@ -206,9 +206,9 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		shader.setLightPosition(myPlayer.position.x, myPlayer.position.y, myPlayer.position.z, 0.8f);
 		//shader.setLightPosition(1.0f, 1.0f, 1.0f, 0.8f);
 		
-		shader.setLightDiffuse(1.0f, 1.0f, 1.0f, 0.0f);
+		shader.setLightDiffuse(0.1f, 1.0f, 1.0f, 0.0f);
 		shader.setMaterialDiffuse(0.2f, 0.1f, 0.8f, 0.0f);
-		shader.setShininess(10000.0f);
+		shader.setShininess(50.0f);
 		
 		ModelMatrix.main.loadIdentityMatrix();
 		
@@ -254,7 +254,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		float[] pm = new float[16];
 		
 		float n = 0.01f;
-		float f = 0.15f;
+		float f = 0.05f;
 		
 		float eq1 = -(f+n/f-n);
 		float eq2 = -((2*f*n)/f-n);

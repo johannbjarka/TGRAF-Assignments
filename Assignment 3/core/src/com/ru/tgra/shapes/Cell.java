@@ -54,19 +54,21 @@ public class Cell {
 			northWall.drawSolidCube();
 			ModelMatrix.main.popMatrix();
 		}
-		
 		ModelMatrix.main.pushMatrix();
+		ModelMatrix.main.addTranslation(wallLength / 2, 0, -wallLength / 2);
 		ModelMatrix.main.addScale(wallLength, 0.1f, wallLength);
 		ModelMatrix.main.setShaderMatrix();
 		northWall.drawSolidCube();
 		ModelMatrix.main.popMatrix();
 		
 		ModelMatrix.main.pushMatrix();
-		ModelMatrix.main.addTranslation(0, wallHeight, 0);
+		ModelMatrix.main.addTranslation(wallLength / 2, wallHeight, -wallLength / 2);
 		ModelMatrix.main.addScale(wallLength, 0.1f, wallLength);
 		ModelMatrix.main.setShaderMatrix();
 		northWall.drawSolidCube();
 		ModelMatrix.main.popMatrix();
+		
+		
 		
 	}
 }
