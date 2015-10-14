@@ -28,10 +28,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		Gdx.input.setInputProcessor(this);
 
 		OrthographicProjection3D(0, Gdx.graphics.getWidth(), 0, Gdx.graphics.getHeight(), -2, 2);
-		
-		//COLOR IS SET HERE
-		shader.setColor(0.7f, 0.2f, 0, 1);
-		
+
 		Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		ModelMatrix.main = new ModelMatrix();
@@ -70,6 +67,10 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.S)) {
 			myPlayer.goBack(myPlayer.speed * deltaTime);
+		}
+		if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+			Gdx.graphics.setDisplayMode(500, 500, false);
+			Gdx.app.exit();
 		}
 		
 		myPlayer.camera.setShaderMatrix(shader.getViewMatrixPointer());
@@ -192,14 +193,20 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		//do all actual drawing and rendering here
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		shader.setColor(0.9f, 0.3f, 0.1f, 1.0f);
-
+		//shader.setEyePosition(1.0f, 1.0f, 1.0f, 0.8f);
+		shader.setEyePosition(myPlayer.position.x, myPlayer.position.y, myPlayer.position.z, 0.7f);
+		shader.setLightPosition(myPlayer.position.x, myPlayer.position.y, myPlayer.position.z, 0.8f);
+		//shader.setLightPosition(1.0f, 1.0f, 1.0f, 0.8f);
+		
+		shader.setLightDiffuse(1.0f, 1.0f, 1.0f, 0.0f);
+		shader.setMaterialDiffuse(0.2f, 0.1f, 0.8f, 0.0f);
+		shader.setShininess(50.0f);
+		
 		ModelMatrix.main.loadIdentityMatrix();
 		
 		myMaze.Draw();
 	}
 	
-
 	@Override
 	public void render () {
 		input();

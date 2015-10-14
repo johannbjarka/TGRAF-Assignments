@@ -15,7 +15,13 @@ public class Shader {
 	private int viewMatrixLoc;
 	private int projectionMatrixLoc;
 
-	private int colorLoc;
+	private int eyePositionLoc;
+	//private int colorLoc;
+	private int lightPositionLoc;
+	private int lightDiffuseLoc;
+	private int materialDiffuseLoc;
+	private int materialShininessLoc;
+	
 	
 	public Shader() {
 		String vertexShaderString;
@@ -26,13 +32,13 @@ public class Shader {
 
 		vertexShaderID = Gdx.gl.glCreateShader(GL20.GL_VERTEX_SHADER);
 		fragmentShaderID = Gdx.gl.glCreateShader(GL20.GL_FRAGMENT_SHADER);
-	
+
 		Gdx.gl.glShaderSource(vertexShaderID, vertexShaderString);
 		Gdx.gl.glShaderSource(fragmentShaderID, fragmentShaderString);
-	
+
 		Gdx.gl.glCompileShader(vertexShaderID);
 		Gdx.gl.glCompileShader(fragmentShaderID);
-		
+
 		System.out.println(Gdx.gl.glGetShaderInfoLog(vertexShaderID));
 		System.out.println(Gdx.gl.glGetShaderInfoLog(fragmentShaderID));
 
@@ -43,24 +49,45 @@ public class Shader {
 	
 		Gdx.gl.glLinkProgram(renderingProgramID);
 
-		positionLoc				= Gdx.gl.glGetAttribLocation(renderingProgramID, "a_position");
+		positionLoc = Gdx.gl.glGetAttribLocation(renderingProgramID, "a_position");
 		Gdx.gl.glEnableVertexAttribArray(positionLoc);
 
-		normalLoc				= Gdx.gl.glGetAttribLocation(renderingProgramID, "a_normal");
+		normalLoc = Gdx.gl.glGetAttribLocation(renderingProgramID, "a_normal");
 		Gdx.gl.glEnableVertexAttribArray(normalLoc);
 
-		modelMatrixLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_modelMatrix");
-		viewMatrixLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_viewMatrix");
+		modelMatrixLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_modelMatrix");
+		viewMatrixLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_viewMatrix");
 		projectionMatrixLoc	= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_projectionMatrix");
-
-		colorLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_color");
+		
+		eyePositionLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_eyePosition");
+		//colorLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_color");
+		lightPositionLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightPosition");
+		lightDiffuseLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightDiffuse");
+		materialDiffuseLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialDiffuse");
+		
+		materialShininessLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialShininess");
+		
 
 		Gdx.gl.glUseProgram(renderingProgramID);
 	}
-	
-	public void setColor(float red, float green, float blue, float alpha) {
-		Gdx.gl.glUniform4f(colorLoc, red, green, blue, alpha);
+
+	public void setEyePosition(float x, float y, float z, float w) {
+		Gdx.gl.glUniform4f(eyePositionLoc, x, y, z, w);
 	}
+	public void setLightPosition(float x, float y, float z, float w) {
+		Gdx.gl.glUniform4f(lightPositionLoc, x, y, z, w);
+	}
+	public void setLightDiffuse(float red, float green, float blue, float alpha) {
+		Gdx.gl.glUniform4f(lightDiffuseLoc, red, green, blue, alpha);
+	}
+	public void setMaterialDiffuse(float red, float green, float blue, float alpha) {
+		Gdx.gl.glUniform4f(materialDiffuseLoc, red, green, blue, alpha);
+	}
+	
+	public void setShininess(float shine) {
+		Gdx.gl.glUniform1f(materialShininessLoc, shine);
+	}
+	
 	
 	public int getVertexPointer() {
 		return positionLoc;

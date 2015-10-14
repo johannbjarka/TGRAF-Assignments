@@ -41,7 +41,7 @@ public class Cell {
 			ModelMatrix.main.pushMatrix();
 			ModelMatrix.main.addTranslation(wallLength, wallHeight / 2, -wallLength / 2);
 			ModelMatrix.main.addScale(wallThickness, wallHeight, wallLength + wallThickness);
-			Gdx.gl.glUniform4f(colorLoc, 1.0f, 1.0f, 0.0f, 1.0f);
+			//Gdx.gl.glUniform4f(colorLoc, 1.0f, 1.0f, 0.0f, 1.0f);
 			ModelMatrix.main.setShaderMatrix();
 			eastWall.drawSolidCube();
 			ModelMatrix.main.popMatrix();
@@ -51,7 +51,7 @@ public class Cell {
 			ModelMatrix.main.pushMatrix();
 			ModelMatrix.main.addTranslation(wallLength / 2, wallHeight / 2, -wallLength);
 			ModelMatrix.main.addScale(wallLength, wallHeight, wallThickness);
-			Gdx.gl.glUniform4f(colorLoc, 0.9f, 0.3f, 0.8f, 1.0f);
+			//Gdx.gl.glUniform4f(colorLoc, 0.9f, 0.3f, 0.8f, 1.0f);
 			ModelMatrix.main.setShaderMatrix();
 			northWall.drawSolidCube();
 			ModelMatrix.main.popMatrix();
