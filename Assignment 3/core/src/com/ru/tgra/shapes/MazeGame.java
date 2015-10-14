@@ -208,7 +208,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		
 		shader.setLightDiffuse(1.0f, 1.0f, 1.0f, 0.0f);
 		shader.setMaterialDiffuse(0.2f, 0.1f, 0.8f, 0.0f);
-		shader.setShininess(50.0f);
+		shader.setShininess(10000.0f);
 		
 		ModelMatrix.main.loadIdentityMatrix();
 		
@@ -253,7 +253,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 	private void PerspectiveProjection3D() {
 		float[] pm = new float[16];
 		
-		float n = 0.1f;
+		float n = 0.01f;
 		float f = 0.15f;
 		
 		float eq1 = -(f+n/f-n);
