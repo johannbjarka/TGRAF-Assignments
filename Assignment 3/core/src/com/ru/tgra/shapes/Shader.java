@@ -23,6 +23,7 @@ public class Shader {
 	private int lightColorLoc;
 	private int materialDiffuseLoc;
 	private int materialSpecLoc;
+	private int materialEmisLoc;
 	
 	private int materialShininessLoc;
 	
@@ -71,6 +72,7 @@ public class Shader {
 		materialDiffuseLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialDiffuse");
 		materialSpecLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialSpecular");
 		materialShininessLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialShininess");
+		materialEmisLoc = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialEmission");
 		
 
 		Gdx.gl.glUseProgram(renderingProgramID);
@@ -94,11 +96,12 @@ public class Shader {
 	public void setMaterialSpecular(float red, float green, float blue, float alpha) {
 		Gdx.gl.glUniform4f(materialSpecLoc, red, green, blue, alpha);
 	}
-	
+	public void setMaterialEmission(float red, float green, float blue, float alpha) {
+		Gdx.gl.glUniform4f(materialEmisLoc, red, green, blue, alpha);
+	}
 	public void setShininess(float shine) {
 		Gdx.gl.glUniform1f(materialShininessLoc, shine);
 	}
-	
 	
 	public int getVertexPointer() {
 		return positionLoc;

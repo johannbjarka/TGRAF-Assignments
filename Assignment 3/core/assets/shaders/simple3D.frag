@@ -5,12 +5,12 @@ precision mediump float;
 
 uniform vec4 u_globalAmbient;
 
-uniform vec4 u_lightDiffuse;
 uniform vec4 u_lightColor;
 
 uniform vec4 u_materialDiffuse;
 uniform vec4 u_materialSpecular;
 uniform float u_materialShininess;
+uniform vec4 u_materialEmission;
 
 varying vec4 v_normal;
 varying vec4 v_s;
@@ -27,5 +27,5 @@ void main()
 	vec4 specularColor = pow(phong, u_materialShininess) * u_lightColor * u_materialSpecular;
 	
 	vec4 light1CalcColor = diffuseColor + specularColor;
-	gl_FragColor = u_globalAmbient * u_materialDiffuse + light1CalcColor;
+	gl_FragColor = u_globalAmbient * u_materialDiffuse + u_materialEmission + light1CalcColor;
 }

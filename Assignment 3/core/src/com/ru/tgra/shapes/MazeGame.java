@@ -208,7 +208,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		
 		ModelMatrix.main.loadIdentityMatrix();
-		
+
 		//shader.setEyePosition(1.0f, 1.0f, 1.0f, 0.8f);
 		shader.setEyePosition(myPlayer.position.x, myPlayer.position.y, myPlayer.position.z, 1.0f);
 		shader.setLightPosition(myPlayer.position.x, myPlayer.position.y, myPlayer.position.z, 1.0f);
@@ -218,7 +218,8 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 		
 		shader.setLightColor(1.0f, 1.0f, 1.0f, 1.0f);
 		shader.setMaterialDiffuse(0.3f, 0.3f, 0.7f, 1.0f);
-		shader.setMaterialSpecular(0.2f, 0.2f, 0.2f, 1.0f);
+		shader.setMaterialSpecular(0.05f, 0.05f, 0.05f, 1.0f);
+		shader.setMaterialEmission(0.0f, 0.0f, 0.0f, 1.0f);
 		shader.setShininess(30.0f);
 		
 		ModelMatrix.main.loadIdentityMatrix();
@@ -237,6 +238,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 			}
 		}
 		*/
+		
 		myPyramid.Draw();
 		
 		
