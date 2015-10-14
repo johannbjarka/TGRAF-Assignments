@@ -1,5 +1,7 @@
 package com.ru.tgra.shapes;
 
+import com.badlogic.gdx.Gdx;
+
 public class Pyramid {
 	
 	public float spaceBetweenBlocks, radius;
@@ -8,6 +10,7 @@ public class Pyramid {
 	public boolean breatheOut;
 	Shader shader;
 	public boolean golden;
+	float angle = 0;
 	
 	public Pyramid(Shader shader, Point3D pos) {
 		this.shader = shader;
@@ -137,11 +140,19 @@ public class Pyramid {
 	}
 	
 	public void drawCubeAtPos() {
-		ModelMatrix.main.pushMatrix();
-		ModelMatrix.main.addTranslation(position.x, position.y, position.z);
-		ModelMatrix.main.addScale(0.03f, 0.03f, 0.03f);
-		ModelMatrix.main.setShaderMatrix();
-		newBox.drawSolidCube();
-		ModelMatrix.main.popMatrix();
+		float deltaTime = Gdx.graphics.getDeltaTime();
+		if(angle < 90) {
+			angle += 0.5f;
+			ModelMatrix.main.pushMatrix();
+			ModelMatrix.main.addTranslation(position.x, position.y, position.z);
+			ModelMatrix.main.addScale(0.03f, 0.03f, 0.03f);
+			ModelMatrix.main.addRotationY(angle);
+			ModelMatrix.main.setShaderMatrix();
+			newBox.drawSolidCube();
+			ModelMatrix.main.popMatrix();
+		} else {
+			angle = 0;
+		}
+		
 	}
 }

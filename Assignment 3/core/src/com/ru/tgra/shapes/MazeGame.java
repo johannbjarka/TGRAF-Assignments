@@ -82,7 +82,7 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 	private void update()
 	{
 		//do all updates to the game
-		
+		float deltaTime = Gdx.graphics.getDeltaTime();
 		ArrayList<Cell> cellsToCollide = new ArrayList<Cell>();
 		
 		int xPos = (int) myPlayer.position.x;
@@ -253,7 +253,6 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 	}
 	
 	public void pyramidCollide(Player thePlayer, Pyramid thePyramid) {
-		float deltaTime = Gdx.graphics.getDeltaTime();
 		float deltaX = thePlayer.position.x - thePyramid.position.x;
 		float deltaY = thePlayer.position.z - thePyramid.position.z;
 		float distanceSquared = deltaX * deltaX + deltaY * deltaY;
