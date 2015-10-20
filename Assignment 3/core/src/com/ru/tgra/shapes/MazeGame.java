@@ -82,7 +82,6 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 	private void update()
 	{
 		//do all updates to the game
-		float deltaTime = Gdx.graphics.getDeltaTime();
 		ArrayList<Cell> cellsToCollide = new ArrayList<Cell>();
 		
 		int xPos = (int) myPlayer.position.x;
@@ -206,7 +205,6 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 	
 	private void display()
 	{
-		float deltaTime = Gdx.graphics.getDeltaTime();
 		//do all actual drawing and rendering here
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		

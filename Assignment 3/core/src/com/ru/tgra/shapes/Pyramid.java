@@ -1,7 +1,5 @@
 package com.ru.tgra.shapes;
 
-import com.badlogic.gdx.Gdx;
-
 public class Pyramid {
 	
 	public float spaceBetweenBlocks, radius;
@@ -140,7 +138,6 @@ public class Pyramid {
 	}
 	
 	public void drawCubeAtPos() {
-		float deltaTime = Gdx.graphics.getDeltaTime();
 		if(angle < 90) {
 			angle += 0.5f;
 			ModelMatrix.main.pushMatrix();
