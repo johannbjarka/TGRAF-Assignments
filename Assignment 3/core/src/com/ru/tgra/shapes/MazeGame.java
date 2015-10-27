@@ -361,8 +361,8 @@ public class MazeGame extends ApplicationAdapter implements InputProcessor {
 	private void PerspectiveProjection3D() {
 		float[] pm = new float[16];
 		
-		float n = 0.01f;
-		float f = 0.1f;
+		float n = 0.1f;
+		float f = 0.100f;
 		
 		float eq1 = -(f+n/f-n);
 		float eq2 = -((2*f*n)/f-n);
