@@ -21,29 +21,35 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 
 public class Main implements ApplicationListener {
+	
 	public static class GameObject extends ModelInstance {
         public final Vector3 center = new Vector3();
         public final Vector3 dimensions = new Vector3();
+        public final float radius;
 
         private final static BoundingBox bounds = new BoundingBox();
 
         public GameObject(Model model, String rootNode, boolean mergeTransform) {
-            super(model, rootNode, mergeTransform);
+        	super(model, rootNode, mergeTransform);
             calculateBoundingBox(bounds);
             bounds.getCenter(center);
             bounds.getDimensions(dimensions);
+            radius = dimensions.len() / 2f;
         }
     }
 	
-	public PerspectiveCamera cam;
-	public ModelBatch modelBatch;
-	public Model model;
-	public AssetManager assets;
-    public Array<GameObject> instances = new Array<GameObject>();
-    public Environment environment;
-    public FPSCameraController camController;
-    public ModelInstance space;
-    public boolean loading;
+	protected PerspectiveCamera cam;
+	protected ModelBatch modelBatch;
+	protected AssetManager assets;
+	protected Array<ModelInstance> instances = new Array<ModelInstance>();
+	protected Environment environment;
+	protected FPSCameraController camController;
+	protected boolean loading;
+	
+	protected Array<GameObject> blocks = new Array<GameObject>();
+	protected Array<GameObject> invaders = new Array<GameObject>();
+	protected ModelInstance ship;
+	protected ModelInstance space;
     
     protected Stage stage;
     protected Label label;
@@ -64,10 +70,10 @@ public class Main implements ApplicationListener {
 	    environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 	        
 		cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(1f, 1f, 1f);
+        cam.position.set(0f, 5f, 5f);
         cam.lookAt(0,0,0);
-        cam.near = 1f;
-        cam.far = 300f;
+        cam.near = 0.1f;
+        cam.far = 500f;
         cam.update();
         
         camController = new FPSCameraController(cam);
@@ -75,29 +81,23 @@ public class Main implements ApplicationListener {
         Gdx.input.setCursorCatched(true);
         
         assets = new AssetManager();
-        assets.load("ship/ship.g3db", Model.class);
-        assets.load("space/spacesphere.obj", Model.class);
+        assets.load("landscape.g3dj", Model.class);
         loading = true;
 		
 	}
 	
 	private void doneLoading() {
-		Model ship = assets.get("ship/ship.g3db", Model.class);
-        for (float x = -5f; x <= 5f; x += 2f) {
-            for (float z = -5f; z <= 5f; z += 2f) {
-            	String id = ship.nodes.get((int) x).id;
-                GameObject shipInstance = new GameObject(ship, id, true);
-                shipInstance.transform.setToTranslation(x, 0, z);
-                
-                if (id.equals("space")) {
-                    space = shipInstance;
-                    continue;
-                }
-                
-                instances.add(shipInstance);
-            }
+		Model model = assets.get("landscape.g3dj", Model.class);
+        for (int i = 0; i < model.nodes.size; i++) {
+            String id = model.nodes.get(i).id;
+            
+            ModelInstance instance = new ModelInstance(model);
+            
+            System.out.println("Drawing: " + id);
+            instances.add(instance);
+
         }
-        space = new ModelInstance(assets.get("space/spacesphere.obj", Model.class));
+     
         loading = false;
     }
 
@@ -106,11 +106,9 @@ public class Main implements ApplicationListener {
 		stage.getViewport().update(width, height, true);
 		
 	}
-	private Vector3 position = new Vector3();
-	protected boolean isVisible(final Camera cam, final GameObject instance) {
-        instance.transform.getTranslation(position);
-        position.add(instance.center);
-        return cam.frustum.boundsInFrustum(position, instance.dimensions);
+	//private Vector3 position = new Vector3();
+	protected boolean isVisible(final Camera cam, final ModelInstance instance) {
+		return true;
     }
 	
 	private int visibleCount;
@@ -126,7 +124,7 @@ public class Main implements ApplicationListener {
 
         modelBatch.begin(cam);
         visibleCount = 0;
-        for (final GameObject instance : instances) {
+        for (final ModelInstance instance : instances) {
             if (isVisible(cam, instance)) {
                 modelBatch.render(instance, environment);
                 visibleCount++;

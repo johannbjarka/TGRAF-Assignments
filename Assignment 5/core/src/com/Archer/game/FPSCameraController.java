@@ -34,7 +34,7 @@ public class FPSCameraController extends InputAdapter {
 	private int BACKWARD = Keys.S;
 	private int UP = Keys.Q;
 	private int DOWN = Keys.E;
-	private float velocity = 5;
+	private float velocity = 50;
 	private float degreesPerPixel = 0.2f;
 	private final Vector3 tmp = new Vector3();
 
