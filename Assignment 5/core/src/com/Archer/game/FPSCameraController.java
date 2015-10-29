@@ -84,11 +84,11 @@ public class FPSCameraController extends InputAdapter {
 	public void update (float deltaTime) {
 		if (keys.containsKey(FORWARD)) {
 			tmp.set(camera.direction).nor().scl(deltaTime * velocity);
-			camera.position.add(tmp);
+			camera.translate(tmp.x, 0, tmp.z);
 		}
 		if (keys.containsKey(BACKWARD)) {
 			tmp.set(camera.direction).nor().scl(-deltaTime * velocity);
-			camera.position.add(tmp);
+			camera.translate(tmp.x, 0, tmp.z);
 		}
 		if (keys.containsKey(STRAFE_LEFT)) {
 			tmp.set(camera.direction).crs(camera.up).nor().scl(-deltaTime * velocity);

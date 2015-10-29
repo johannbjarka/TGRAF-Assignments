@@ -7,13 +7,16 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -56,8 +59,11 @@ public class Main implements ApplicationListener {
     protected BitmapFont font;
     protected StringBuilder stringBuilder;
     
+    public Model box;
+    public ModelInstance instance;
 	@Override
 	public void create() {
+		
 		stage = new Stage();
         font = new BitmapFont();
         label = new Label(" ", new Label.LabelStyle(font, Color.WHITE));
@@ -70,11 +76,17 @@ public class Main implements ApplicationListener {
 	    environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 	        
 		cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(0f, 5f, 5f);
-        cam.lookAt(0,0,0);
-        cam.near = 0.1f;
-        cam.far = 500f;
+        cam.position.set(0f, 10.0f, 5f);
+        cam.lookAt(0,10.0f,0);
+        cam.near = 1.0f;
+        cam.far = 500.0f;
         cam.update();
+        
+        ModelBuilder modelBuilder = new ModelBuilder();
+        box = modelBuilder.createBox(5f, 5f, 5f, 
+            new Material(ColorAttribute.createDiffuse(Color.RED)),
+            Usage.Position | Usage.Normal);
+        instance = new ModelInstance(box);
         
         camController = new FPSCameraController(cam);
         Gdx.input.setInputProcessor(camController);
@@ -97,7 +109,7 @@ public class Main implements ApplicationListener {
             instances.add(instance);
 
         }
-     
+        
         loading = false;
     }
 
@@ -133,6 +145,8 @@ public class Main implements ApplicationListener {
         if (space != null) {
             modelBatch.render(space);
         }
+        ModelInstance boxInstance = new ModelInstance(this.box);
+        modelBatch.render(boxInstance);
         modelBatch.end();
         
         stringBuilder.setLength(0);
@@ -159,6 +173,7 @@ public class Main implements ApplicationListener {
 		modelBatch.dispose();
         instances.clear();
         assets.dispose();
+        box.dispose();
 	}
 	
 	
