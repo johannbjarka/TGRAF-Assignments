@@ -20,11 +20,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntIntMap;
 
 /** Takes a {@link Camera} instance and controls it via w,a,s,d and mouse panning.
- * @author badlogic */
+ * @author badlogic
+ * Extended functionality by Hjalti Leifsson */
 public class FPSCameraController extends InputAdapter {
 	private final Camera camera;
 	private final IntIntMap keys = new IntIntMap();
@@ -32,11 +34,12 @@ public class FPSCameraController extends InputAdapter {
 	private int STRAFE_RIGHT = Keys.D;
 	private int FORWARD = Keys.W;
 	private int BACKWARD = Keys.S;
-	private int UP = Keys.Q;
-	private int DOWN = Keys.E;
 	private float velocity = 10;
 	private float degreesPerPixel = 0.2f;
 	private final Vector3 tmp = new Vector3();
+
+	public Matrix4 characterTransform;
+
 
 	public FPSCameraController (Camera camera) {
 		this.camera = camera;
@@ -73,7 +76,9 @@ public class FPSCameraController extends InputAdapter {
 		camera.direction.rotate(camera.up, deltaX);
 		tmp.set(camera.direction).crs(camera.up).nor();
 		camera.direction.rotate(tmp, deltaY);
-		// camera.up.rotate(tmp, deltaY);
+		
+		characterTransform.rotate(camera.up, deltaX);
+
 		return true;
 	}
 
@@ -82,30 +87,28 @@ public class FPSCameraController extends InputAdapter {
 	}
 
 	public void update (float deltaTime) {
+		
 		if (keys.containsKey(FORWARD)) {
 			tmp.set(camera.direction).nor().scl(deltaTime * velocity);
 			camera.translate(tmp.x, 0, tmp.z);
+			characterTransform.trn(tmp.x, 0, tmp.z);
 		}
 		if (keys.containsKey(BACKWARD)) {
 			tmp.set(camera.direction).nor().scl(-deltaTime * velocity);
 			camera.translate(tmp.x, 0, tmp.z);
+			characterTransform.trn(tmp.x, 0, tmp.z);
 		}
 		if (keys.containsKey(STRAFE_LEFT)) {
 			tmp.set(camera.direction).crs(camera.up).nor().scl(-deltaTime * velocity);
 			camera.position.add(tmp);
+			characterTransform.trn(tmp);
 		}
 		if (keys.containsKey(STRAFE_RIGHT)) {
 			tmp.set(camera.direction).crs(camera.up).nor().scl(deltaTime * velocity);
 			camera.position.add(tmp);
+			characterTransform.trn(tmp);
 		}
-		if (keys.containsKey(UP)) {
-			tmp.set(camera.up).nor().scl(deltaTime * velocity);
-			camera.position.add(tmp);
-		}
-		if (keys.containsKey(DOWN)) {
-			tmp.set(camera.up).nor().scl(-deltaTime * velocity);
-			camera.position.add(tmp);
-		}
+		
 		camera.update(true);
 	}
 }
