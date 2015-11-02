@@ -24,6 +24,7 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
@@ -91,6 +92,7 @@ public class Main implements ApplicationListener {
             motionState.transform = transform;
             body = new btRigidBody(constructionInfo);
             body.setMotionState(motionState);
+            body.setRestitution(0.5f);
         }
 		
 		@Override
@@ -210,7 +212,7 @@ public class Main implements ApplicationListener {
         
         mb.node().id = "sphere";
         mb.part("sphere", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GREEN)))
-            .sphere(1f, 1f, 1f, 10, 10);
+            .sphere(0.5f, 0.5f, 0.5f, 10, 10);
         
         mb.node().id = "box";
         mb.part("box", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal | Usage.TextureCoordinates, new Material(TextureAttribute.createDiffuse(ironTex),ColorAttribute.createSpecular(1,1,1,1), FloatAttribute.createShininess(8f)))
@@ -235,10 +237,10 @@ public class Main implements ApplicationListener {
         model = mb.end();
         
         constructors = new ArrayMap<String, GameObject.Constructor>(String.class, GameObject.Constructor.class);
-        constructors.put("sphere", new GameObject.Constructor(model, "sphere", new btSphereShape(0.5f), 1f));
-        constructors.put("box", new GameObject.Constructor(model, "box", new btBoxShape(new Vector3(1.25f, 1.25f, 1.25f)), 100f));
-        constructors.put("cone", new GameObject.Constructor(model, "cone", new btConeShape(0.5f, 2f), 1f));
-        constructors.put("capsule", new GameObject.Constructor(model, "capsule", new btCapsuleShape(.5f, 1f), 1f));
+        constructors.put("sphere", new GameObject.Constructor(model, "sphere", new btSphereShape(0.25f), 5f));
+        constructors.put("box", new GameObject.Constructor(model, "box", new btBoxShape(new Vector3(1.25f, 1.25f, 1.25f)), 10f));
+        constructors.put("cone", new GameObject.Constructor(model, "cone", new btConeShape(0.5f, 2f), 10f));
+        constructors.put("capsule", new GameObject.Constructor(model, "capsule", new btCapsuleShape(.5f, 1f), 10f));
         
         collisionConfig = new btDefaultCollisionConfiguration();
         dispatcher = new btCollisionDispatcher(collisionConfig);
@@ -264,7 +266,7 @@ public class Main implements ApplicationListener {
 		ghostShape = new btCapsuleShape(.5f, 4f);
 		ghostObject.setCollisionShape(ghostShape);
 		ghostObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_CHARACTER_OBJECT);
-		dynamicsWorld.addCollisionObject(ghostObject);
+		//dynamicsWorld.addCollisionObject(ghostObject);
 
 		camController.characterTransform = characterTransform;
 
@@ -318,6 +320,22 @@ public class Main implements ApplicationListener {
 		loading = false;
 	}
 	
+	public void shoot(float x, float y, float power) {
+		System.out.println("Shooting!");
+		Ray ray = cam.getPickRay(x, y);
+		
+		GameObject bullet = constructors.get("sphere").construct();
+		instances.add(bullet);
+		
+		bullet.transform.trn(ray.origin.x, ray.origin.y, ray.origin.z);
+		bullet.body.proceedToTransform(bullet.transform);
+		bullet.body.setUserValue(instances.size);
+		bullet.body.setCollisionFlags(bullet.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+        
+		((btRigidBody)bullet.body).applyCentralImpulse(ray.direction.scl(power));
+		dynamicsWorld.addRigidBody(bullet.body);
+	}
+	
 	@Override
 	public void resize(int width, int height) {
 		stage.getViewport().update(width, height, true);
@@ -336,10 +354,8 @@ public class Main implements ApplicationListener {
 		
         if ((spawnTimer -= delta) < 0) {
             spawn();
-            spawnTimer = 0.01f;
+            spawnTimer = 0.05f;
         }
-
-		camController.update();
 		
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
@@ -356,9 +372,17 @@ public class Main implements ApplicationListener {
         stage.draw();
         
         update();
+        input();
+	}
+	
+	public void input() {
+		if(Gdx.input.justTouched()) {
+			shoot(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 500);
+		}
 	}
 	
 	public void update () {
+		camController.update();
 		ghostObject.setWorldTransform(characterTransform);
 	}
 	
