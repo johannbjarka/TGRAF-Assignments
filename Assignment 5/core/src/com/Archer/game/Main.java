@@ -74,11 +74,20 @@ public class Main implements ApplicationListener {
         @Override
         public boolean onContactAdded (int userValue0, int partId0, int index0, int userValue1, int partId1, int index1) {
         	/*
+        	System.out.println("userValue0: " + userValue0);
+        	System.out.println("partId0: " + partId0);
+        	System.out.println("index0: " + index0);
+        	System.out.println("userValue1: " + userValue1);
+        	System.out.println("partId1: " + partId1);
+        	System.out.println("index1: " + index1);
+			*/
+        	/*
         	if (userValue1 == 0)
-                ((ColorAttribute)instances.get(userValue0).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
+	            ((ColorAttribute)instances.get(userValue0).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
             if (userValue0 == 0)
                 ((ColorAttribute)instances.get(userValue1).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
-            */return true;
+            */
+            return true;
         }
     }
 	
@@ -154,6 +163,7 @@ public class Main implements ApplicationListener {
     
     Array<GameObject> instances;
     ArrayMap<String, GameObject.Constructor> constructors;
+    ArrayMap<String, GameObject.Constructor> staticObjects;
 
     MyContactListener contactListener;
     btBroadphaseInterface broadphase;
@@ -168,6 +178,8 @@ public class Main implements ApplicationListener {
 	Vector3 walkDirection = new Vector3();
 	
 	Sprite sprite;
+	
+	Texture woodTex;
     
     
 	@Override
@@ -191,10 +203,10 @@ public class Main implements ApplicationListener {
 	    
 	    // Create the perspective camera
 		cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(0f, 5f, 0.5f);
-        cam.lookAt(0,5f,0);
-        cam.near = 0.1f;
-        cam.far = 500.0f;
+        cam.position.set(0f, 10f, -100f);
+        cam.lookAt(0,10f,0);
+        cam.near = 1.0f;
+        cam.far = 2000.0f;
         cam.update();
         
         // Set the camera controller
@@ -205,6 +217,7 @@ public class Main implements ApplicationListener {
         
         final Texture texture = new Texture(Gdx.files.internal("grass.jpg"));
         final Texture ironTex = new Texture(Gdx.files.internal("iron.jpg"));
+        woodTex = new Texture(Gdx.files.internal("gameWood.jpg"));
         
         // Build some models
         ModelBuilder mb = new ModelBuilder();
@@ -212,7 +225,7 @@ public class Main implements ApplicationListener {
         
         mb.node().id = "sphere";
         mb.part("sphere", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GREEN)))
-            .sphere(0.5f, 0.5f, 0.5f, 10, 10);
+            .sphere(1f, 1f, 1f, 10, 10);
         
         mb.node().id = "box";
         mb.part("box", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal | Usage.TextureCoordinates, new Material(TextureAttribute.createDiffuse(ironTex),ColorAttribute.createSpecular(1,1,1,1), FloatAttribute.createShininess(8f)))
@@ -234,10 +247,14 @@ public class Main implements ApplicationListener {
         mb.part("cylinder", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.MAGENTA)))
             .cylinder(1f, 2f, 1f, 10);
         
-        model = mb.end();
+        mb.node().id = "target";
+        mb.part("target", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.MAGENTA)))
+            .cylinder(1f, 2f, 1f, 10);
         
+        model = mb.end();
+        staticObjects = new ArrayMap<String, GameObject.Constructor>(String.class, GameObject.Constructor.class);
         constructors = new ArrayMap<String, GameObject.Constructor>(String.class, GameObject.Constructor.class);
-        constructors.put("sphere", new GameObject.Constructor(model, "sphere", new btSphereShape(0.25f), 5f));
+        constructors.put("sphere", new GameObject.Constructor(model, "sphere", new btSphereShape(0.5f), 1f));
         constructors.put("box", new GameObject.Constructor(model, "box", new btBoxShape(new Vector3(1.25f, 1.25f, 1.25f)), 10f));
         constructors.put("cone", new GameObject.Constructor(model, "cone", new btConeShape(0.5f, 2f), 10f));
         constructors.put("capsule", new GameObject.Constructor(model, "capsule", new btCapsuleShape(.5f, 1f), 10f));
@@ -258,7 +275,7 @@ public class Main implements ApplicationListener {
 		character = constructors.get("character").construct();
 		character.transform.trn(0, 3.5f, 0);
 		characterTransform = character.transform; // Set by reference
-		instances.add(character);
+		//instances.add(character);
 		
 		// Create the physics representation of the character
 		ghostObject = new btPairCachingGhostObject();
@@ -271,7 +288,7 @@ public class Main implements ApplicationListener {
 		camController.characterTransform = characterTransform;
 
         assets = new AssetManager();
-        assets.load("landscape.g3dj", Model.class);
+        assets.load("scene.g3dj", Model.class);
         loading = true;
         
         // Setup cross hair
@@ -296,27 +313,103 @@ public class Main implements ApplicationListener {
 	}
 	
 	private void doneLoading () {
-		Model model = assets.get("landscape.g3dj", Model.class);
+		Model landscape = assets.get("scene.g3dj", Model.class);
         
-		for (int i = 0; i < model.nodes.size; i++) {
-			String id = model.nodes.get(i).id;
+		for (int i = 0; i < landscape.nodes.size; i++) {
+			String id = landscape.nodes.get(i).id;
 			
-			float x = model.nodes.get(i).scale.x;
-			float z = model.nodes.get(i).scale.y;
-			float y = model.nodes.get(i).scale.z / 2;
+			float x = landscape.nodes.get(i).scale.x;
+			float z = landscape.nodes.get(i).scale.y;
+			float y = landscape.nodes.get(i).scale.z;
 			
 			if(id.equals("Grid")) {
-				constructors.insert(1, id, new GameObject.Constructor(model, id, new btBoxShape(new Vector3(x, y, z)),  0f));
-				GameObject gridObject = constructors.get(id).construct();
+				staticObjects.put(id, new GameObject.Constructor(landscape, id, new btBoxShape(new Vector3(x, y / 2, z)),  0f));
+				GameObject gridObject = staticObjects.get(id).construct();
 		        instances.add(gridObject);
 		        dynamicsWorld.addRigidBody(gridObject.body);
 		        
 			} else if(id.equals("Sphere")) {
-				constructors.insert(2, id, new GameObject.Constructor(model, id, new btSphereShape(50),  0f));
-				GameObject gridObject = constructors.get(id).construct();
-		        instances.add(gridObject);
+				staticObjects.put(id, new GameObject.Constructor(landscape, id, new btSphereShape(50),  0f));
+				GameObject sphereObject = staticObjects.get(id).construct();
+		        instances.add(sphereObject);
+		        
+			} else if(id.equals("roof")) {
+				staticObjects.put(id, new GameObject.Constructor(landscape, id, new btBoxShape(new Vector3(x, y, z)),  0f));
+				GameObject roofObject = staticObjects.get(id).construct();
+		        instances.add(roofObject);
+		        
+		        roofObject.transform.trn(0, 21f, 0);
+		        roofObject.transform.rotate(0, 0, 1, 10);
+		        roofObject.body.proceedToTransform(roofObject.transform);
+		        
+		        dynamicsWorld.addRigidBody(roofObject.body);
+		        
+			} else if(id.equals("floor")) {
+				staticObjects.put(id, new GameObject.Constructor(landscape, id, new btBoxShape(new Vector3(x, y, z)),  0f));
+				GameObject roofObject = staticObjects.get(id).construct();
+		        instances.add(roofObject);
+		        
+		        roofObject.transform.trn(0, 0.1f, 0);
+		        roofObject.body.proceedToTransform(roofObject.transform);
+		        
 			}
 		}
+		
+		ModelBuilder mb = new ModelBuilder();
+		mb.begin();
+		
+        mb.node().id = "wall";
+        mb.part("wall", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal | Usage.TextureCoordinates, new Material(TextureAttribute.createDiffuse(woodTex),ColorAttribute.createSpecular(0,0,0,0), FloatAttribute.createShininess(0f)))
+            .box(40f, 40f, 1f);
+        
+        mb.node().id = "wall1";
+        mb.part("wall1", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal | Usage.TextureCoordinates, new Material(TextureAttribute.createDiffuse(woodTex),ColorAttribute.createSpecular(0,0,0,0), FloatAttribute.createShininess(0f)))
+            .box(20f, 20f, 1f);
+        
+        mb.node().id = "wall2";
+        mb.part("wall2", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal | Usage.TextureCoordinates, new Material(TextureAttribute.createDiffuse(woodTex),ColorAttribute.createSpecular(0,0,0,0), FloatAttribute.createShininess(0f)))
+            .box(40f, 10, 1f);
+        
+        Model model = mb.end();
+        
+        staticObjects.put("wall", new GameObject.Constructor(model, "wall", new btBoxShape(new Vector3(20, 20f, 0.5f)),  0f));
+		GameObject wall = staticObjects.get("wall").construct();
+        instances.add(wall);
+        
+        wall.transform.trn(-10,0,0);
+        wall.transform.rotate(0, 1, 0, 90);
+        wall.body.proceedToTransform(wall.transform);
+        
+        dynamicsWorld.addRigidBody(wall.body);
+        
+        staticObjects.put("wall1", new GameObject.Constructor(model, "wall1", new btBoxShape(new Vector3(10, 10f, 0.5f)),  0f));
+		wall = staticObjects.get("wall1").construct();
+        instances.add(wall);
+        
+        wall.transform.trn(0,0,20);
+        wall.body.proceedToTransform(wall.transform);
+        
+        dynamicsWorld.addRigidBody(wall.body);
+        
+        staticObjects.put("wall1", new GameObject.Constructor(model, "wall1", new btBoxShape(new Vector3(10, 10f, 0.5f)),  0f));
+		wall = staticObjects.get("wall1").construct();
+        instances.add(wall);
+        
+        wall.transform.trn(0,0,-20);
+        wall.body.proceedToTransform(wall.transform);
+        
+        dynamicsWorld.addRigidBody(wall.body);
+        
+        staticObjects.put("wall2", new GameObject.Constructor(model, "wall2", new btBoxShape(new Vector3(20, 5f, 0.5f)),  0f));
+		wall = staticObjects.get("wall2").construct();
+        instances.add(wall);
+        
+        wall.transform.trn(10,0,0);
+        wall.transform.rotate(0, 1, 0, 90);
+        wall.body.proceedToTransform(wall.transform);
+        
+        dynamicsWorld.addRigidBody(wall.body);
+		
 		loading = false;
 	}
 	
@@ -332,7 +425,7 @@ public class Main implements ApplicationListener {
 		bullet.body.setUserValue(instances.size);
 		bullet.body.setCollisionFlags(bullet.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
         
-		((btRigidBody)bullet.body).applyCentralImpulse(ray.direction.scl(power));
+		((btRigidBody)bullet.body).applyCentralImpulse(ray.direction.scl(50));
 		dynamicsWorld.addRigidBody(bullet.body);
 	}
 	
@@ -353,9 +446,10 @@ public class Main implements ApplicationListener {
 		dynamicsWorld.stepSimulation(delta, 5, 1f/60f);
 		
         if ((spawnTimer -= delta) < 0) {
-            spawn();
-            spawnTimer = 0.05f;
+            //spawn();
+            spawnTimer = 0.5f;
         }
+        
 		
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
@@ -387,10 +481,10 @@ public class Main implements ApplicationListener {
 	}
 	
 	public void spawn() {
-		GameObject obj = constructors.values[3 + MathUtils.random(constructors.size - 4)].construct();
+		GameObject obj = constructors.values[MathUtils.random(constructors.size - 1)].construct();
         
 		obj.transform.setFromEulerAngles(MathUtils.random(360f), MathUtils.random(360f), MathUtils.random(360f));
-        obj.transform.trn(MathUtils.random(-90.0f, 90.0f), 20f, MathUtils.random(-90.0f, 90.0f));
+        obj.transform.trn(MathUtils.random(-90.0f, 90.0f), 50f, MathUtils.random(-90.0f, 90.0f));
         obj.body.proceedToTransform(obj.transform);
         obj.body.setUserValue(instances.size);
         obj.body.setCollisionFlags(obj.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
