@@ -2,6 +2,7 @@ package com.Archer.game;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -72,33 +73,26 @@ public class Main implements ApplicationListener {
     }
 	
 	class MyContactListener extends ContactListener {
-        @Override
-        public boolean onContactAdded (int userValue0, int partId0, int index0, int userValue1, int partId1, int index1) {
-        	/*
-        	System.out.println("COLLISION!");
-        	System.out.println("userValue0: " + userValue0);
-        	System.out.println("partId0: " + partId0);
-        	System.out.println("index0: " + index0);
-        	System.out.println("userValue1: " + userValue1);
-        	System.out.println("partId1: " + partId1);
-        	System.out.println("index1: " + index1);
-        	*/
-        	
-        	if (userValue1 == 1 || userValue0 == 1) {
-        		System.out.println(userValue1 + ", " + userValue0);
-        		score++;
-	            ((ColorAttribute)instances.get(0).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
-        	}
-
-            
-            return true;
-        }
 		
+		@Override
+		public void onContactEnded(btCollisionObject colObj0, btCollisionObject colObj1) {
+			if(colObj0.getUserValue() == 1337) {
+				// Is a target
+				GameObject target = targets.get(colObj0.getUserIndex());
+				
+				System.out.println(colObj0.getUserIndex());
+				target.doRender = false;
+				score++;
+				
+				spawnTarget();
+			}
+		  }
     }
 	
 	static class GameObject extends ModelInstance implements Disposable {
         public final btRigidBody body;
         public final MyMotionState motionState;
+        public boolean doRender;
         
         public GameObject (Model model, String node, btRigidBody.btRigidBodyConstructionInfo constructionInfo) {
             super(model, node);
@@ -106,7 +100,9 @@ public class Main implements ApplicationListener {
             motionState.transform = transform;
             body = new btRigidBody(constructionInfo);
             body.setMotionState(motionState);
-            body.setRestitution(0.5f);
+            body.setRestitution(0.6f);
+            body.setRollingFriction(100);
+            this.doRender = true;
         }
 		
 		@Override
@@ -155,6 +151,7 @@ public class Main implements ApplicationListener {
     
     protected Stage stage;
     protected Label label;
+    protected Label infoText;
     protected BitmapFont font;
     protected StringBuilder stringBuilder;
 	boolean collision;
@@ -166,6 +163,8 @@ public class Main implements ApplicationListener {
     btDispatcher dispatcher;
     
     Array<GameObject> instances;
+    Array<GameObject> targets;
+    
     ArrayMap<String, GameObject.Constructor> constructors;
     ArrayMap<String, GameObject.Constructor> staticObjects;
 
@@ -186,28 +185,46 @@ public class Main implements ApplicationListener {
 	Texture woodTex;
 	
 	int score;
+	
+	boolean paused;
     
     
 	@Override
 	public void create() {
 		Bullet.init();
+		
+		paused = true;
         
 		// Set 2D stage for 2D UI
 		stage = new Stage();
         font = new BitmapFont();
         label = new Label(" ", new Label.LabelStyle(font, Color.WHITE));
+        
+        infoText = new Label("Welcome to my physics simulator."
+        					+ " \n Use the mouse to look around,"
+			        		+ " \n WASD keys to move around,"
+			        		+ " \n and the left mouse button to shoot."
+			        		+ " \n Press SpaceBar to start the game",
+			        		new Label.LabelStyle(font, Color.WHITE));
+        
+        infoText.setPosition(Gdx.graphics.getWidth()/2 - infoText.getWidth() / 2, Gdx.graphics.getHeight() / 2 + Gdx.graphics.getHeight() / 4);
+        
         stage.addActor(label);
+        stage.addActor(infoText);
+        
         stringBuilder = new StringBuilder();
         
         // Our model batch that we will render
 		modelBatch = new ModelBatch();
 		
 		instances = new Array<GameObject>();
+		targets = new Array<GameObject>();
 		
 		// Create our environment and lighting
 		environment = new Environment();
 	    environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
-	    environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+	    environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, 0, 50f, 0));
+	    environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, 0, -50f, 0));
 	    
 	    // Create the perspective camera
 		cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -219,7 +236,7 @@ public class Main implements ApplicationListener {
         
         // Set the camera controller
         camController = new FPSCameraController(cam);
-        Gdx.input.setInputProcessor(camController);
+        
         Gdx.input.setCursorCatched(true);
         
         
@@ -233,7 +250,7 @@ public class Main implements ApplicationListener {
         
         mb.node().id = "sphere";
         mb.part("sphere", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GREEN)))
-            .sphere(1f, 1f, 1f, 10, 20);
+            .sphere(1f, 1f, 1f, 20, 20);
         
         mb.node().id = "box";
         mb.part("box", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal | Usage.TextureCoordinates, new Material(TextureAttribute.createDiffuse(ironTex),ColorAttribute.createSpecular(1,1,1,1), FloatAttribute.createShininess(8f)))
@@ -273,19 +290,13 @@ public class Main implements ApplicationListener {
         constraintSolver = new btSequentialImpulseConstraintSolver();
         
         dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
-        dynamicsWorld.setGravity(new Vector3(0, -10, 0));
+        dynamicsWorld.setGravity(new Vector3(0, -20, 0));
         
         contactListener = new MyContactListener();
         
         staticObjects.put("target", new GameObject.Constructor(model, "target", new btCylinderShape(new Vector3(2.5f, 0.5f, 2.5f)), 0));
         
-        GameObject target = staticObjects.get("target").construct();
-        instances.add(target);
-        target.transform.trn(50, 10, 0);
-        target.transform.rotate(0, 0, 1, 90);
-        target.body.proceedToTransform(target.transform);
-        target.body.setUserValue(instances.size);
-        dynamicsWorld.addRigidBody(target.body);
+        
         
 		staticObjects.put("character", new GameObject.Constructor(model, "character",  new btCapsuleShape(5f, 10f), 1f));
 		character = staticObjects.get("character").construct();
@@ -328,7 +339,7 @@ public class Main implements ApplicationListener {
 		
 		stage.addActor(crosshair);
 		
-		
+		spawnTarget();
         
         score = 0;
 	}
@@ -446,7 +457,7 @@ public class Main implements ApplicationListener {
 		bullet.body.setUserValue(instances.size);
 		bullet.body.setCollisionFlags(bullet.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
         
-		((btRigidBody)bullet.body).applyCentralImpulse(ray.direction.scl(50));
+		((btRigidBody)bullet.body).applyCentralImpulse(ray.direction.scl(power));
 		dynamicsWorld.addRigidBody(bullet.body);
 	}
 	
@@ -468,6 +479,7 @@ public class Main implements ApplicationListener {
 		
         if ((spawnTimer -= delta) < 0) {
             //spawn();
+        	//spawnTarget();
             spawnTimer = 0.5f;
         }
         
@@ -477,6 +489,14 @@ public class Main implements ApplicationListener {
 
         modelBatch.begin(cam);
         modelBatch.render(instances, environment);
+        for(GameObject target : targets) {
+        	if(target.doRender) {
+        		modelBatch.render(target, environment);
+        	} else {
+        		dynamicsWorld.removeRigidBody(target.body);
+        	}
+        }
+        
         modelBatch.end();
         
         stringBuilder.setLength(0);
@@ -490,19 +510,34 @@ public class Main implements ApplicationListener {
 	}
 	
 	public void input() {
-		if(Gdx.input.justTouched()) {
-			shoot(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 500);
+		if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+			if(paused) {
+				infoText.setText(" ");
+				Gdx.input.setInputProcessor(camController);
+				paused = !paused;
+			} else {
+				infoText.setText("Paused!");
+				Gdx.input.setInputProcessor(null);
+				paused = !paused;
+			}
+			
+		}
+		
+		if(!paused) {
+			if(Gdx.input.justTouched()) {
+				shoot(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 50);
+			}
 		}
 	}
 	
 	public void update () {
 		camController.update();
-		ghostObject.setWorldTransform(characterTransform);
+		//ghostObject.setWorldTransform(characterTransform);
 	}
 	
 	public void spawn() {
 		GameObject obj = constructors.values[MathUtils.random(constructors.size - 1)].construct();
-        
+         
 		obj.transform.setFromEulerAngles(MathUtils.random(360f), MathUtils.random(360f), MathUtils.random(360f));
         obj.transform.trn(MathUtils.random(-90.0f, 90.0f), 50f, MathUtils.random(-90.0f, 90.0f));
         obj.body.proceedToTransform(obj.transform);
@@ -512,13 +547,31 @@ public class Main implements ApplicationListener {
         instances.add(obj);
         dynamicsWorld.addRigidBody(obj.body);
     }
+	
+	public void spawnTarget() {
+		GameObject target = staticObjects.get("target").construct();
+		
+        target.transform.trn(50, MathUtils.random(10.0f, 25.0f), MathUtils.random(-20.0f, 20.0f));
+        target.transform.rotate(0, 0, 1, 90);
+        target.body.proceedToTransform(target.transform);
+        target.body.setUserValue(1337);
+        target.body.setCollisionFlags(target.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+        target.body.setUserIndex(targets.size);
+        
+        targets.add(target);
+        dynamicsWorld.addRigidBody(target.body);
+	}
 
 	@Override
 	public void dispose() {
 		for (GameObject obj : instances)
 	        obj.dispose();
 	    instances.clear();
-	
+	    
+	    for (GameObject obj : targets)
+	        obj.dispose();
+	    targets.clear();
+	    
 	    for (GameObject.Constructor ctor : constructors.values())
 	        ctor.dispose();
 	    constructors.clear();
