@@ -36,6 +36,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.collision.btConeShape;
 import com.badlogic.gdx.physics.bullet.collision.btConvexShape;
+import com.badlogic.gdx.physics.bullet.collision.btCylinderShape;
 import com.badlogic.gdx.physics.bullet.collision.btDbvtBroadphase;
 import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
 import com.badlogic.gdx.physics.bullet.collision.btDispatcher;
@@ -74,21 +75,25 @@ public class Main implements ApplicationListener {
         @Override
         public boolean onContactAdded (int userValue0, int partId0, int index0, int userValue1, int partId1, int index1) {
         	/*
+        	System.out.println("COLLISION!");
         	System.out.println("userValue0: " + userValue0);
         	System.out.println("partId0: " + partId0);
         	System.out.println("index0: " + index0);
         	System.out.println("userValue1: " + userValue1);
         	System.out.println("partId1: " + partId1);
         	System.out.println("index1: " + index1);
-			*/
-        	/*
-        	if (userValue1 == 0)
-	            ((ColorAttribute)instances.get(userValue0).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
-            if (userValue0 == 0)
-                ((ColorAttribute)instances.get(userValue1).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
-            */
+        	*/
+        	
+        	if (userValue1 == 1 || userValue0 == 1) {
+        		System.out.println(userValue1 + ", " + userValue0);
+        		score++;
+	            ((ColorAttribute)instances.get(0).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
+        	}
+
+            
             return true;
         }
+		
     }
 	
 	static class GameObject extends ModelInstance implements Disposable {
@@ -152,7 +157,6 @@ public class Main implements ApplicationListener {
     protected Label label;
     protected BitmapFont font;
     protected StringBuilder stringBuilder;
-    private int visibleCount;
 	boolean collision;
 	float spawnTimer;
 	
@@ -180,6 +184,8 @@ public class Main implements ApplicationListener {
 	Sprite sprite;
 	
 	Texture woodTex;
+	
+	int score;
     
     
 	@Override
@@ -196,6 +202,8 @@ public class Main implements ApplicationListener {
         // Our model batch that we will render
 		modelBatch = new ModelBatch();
 		
+		instances = new Array<GameObject>();
+		
 		// Create our environment and lighting
 		environment = new Environment();
 	    environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
@@ -203,8 +211,8 @@ public class Main implements ApplicationListener {
 	    
 	    // Create the perspective camera
 		cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(0f, 10f, -100f);
-        cam.lookAt(0,10f,0);
+        cam.position.set(0f, 10f, 0f);
+        cam.lookAt(1,10f,0);
         cam.near = 1.0f;
         cam.far = 2000.0f;
         cam.update();
@@ -215,7 +223,7 @@ public class Main implements ApplicationListener {
         Gdx.input.setCursorCatched(true);
         
         
-        final Texture texture = new Texture(Gdx.files.internal("grass.jpg"));
+        //final Texture texture = new Texture(Gdx.files.internal("grass.jpg"));
         final Texture ironTex = new Texture(Gdx.files.internal("iron.jpg"));
         woodTex = new Texture(Gdx.files.internal("gameWood.jpg"));
         
@@ -225,7 +233,7 @@ public class Main implements ApplicationListener {
         
         mb.node().id = "sphere";
         mb.part("sphere", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GREEN)))
-            .sphere(1f, 1f, 1f, 10, 10);
+            .sphere(1f, 1f, 1f, 10, 20);
         
         mb.node().id = "box";
         mb.part("box", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal | Usage.TextureCoordinates, new Material(TextureAttribute.createDiffuse(ironTex),ColorAttribute.createSpecular(1,1,1,1), FloatAttribute.createShininess(8f)))
@@ -236,8 +244,8 @@ public class Main implements ApplicationListener {
             .cone(1f, 2f, 1f, 10);
         
         mb.node().id = "character";
-        mb.part("character", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal | Usage.TextureCoordinates, new Material(TextureAttribute.createDiffuse(texture),ColorAttribute.createSpecular(1,1,1,1), FloatAttribute.createShininess(8f)))
-            .capsule(1f, 8f, 16);
+        mb.part("character", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal | Usage.TextureCoordinates, new Material(TextureAttribute.createDiffuse(ironTex),ColorAttribute.createSpecular(1,1,1,1), FloatAttribute.createShininess(8f)))
+            .capsule(5f, 20f, 16);
         
         mb.node().id = "capsule";
         mb.part("capsule", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.CYAN)))
@@ -249,7 +257,7 @@ public class Main implements ApplicationListener {
         
         mb.node().id = "target";
         mb.part("target", GL20.GL_TRIANGLES, Usage.Position | Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.MAGENTA)))
-            .cylinder(1f, 2f, 1f, 10);
+            .cylinder(5f, 1f, 5f, 30);
         
         model = mb.end();
         staticObjects = new ArrayMap<String, GameObject.Constructor>(String.class, GameObject.Constructor.class);
@@ -258,7 +266,7 @@ public class Main implements ApplicationListener {
         constructors.put("box", new GameObject.Constructor(model, "box", new btBoxShape(new Vector3(1.25f, 1.25f, 1.25f)), 10f));
         constructors.put("cone", new GameObject.Constructor(model, "cone", new btConeShape(0.5f, 2f), 10f));
         constructors.put("capsule", new GameObject.Constructor(model, "capsule", new btCapsuleShape(.5f, 1f), 10f));
-        
+
         collisionConfig = new btDefaultCollisionConfiguration();
         dispatcher = new btCollisionDispatcher(collisionConfig);
         broadphase = new btDbvtBroadphase();
@@ -268,23 +276,32 @@ public class Main implements ApplicationListener {
         dynamicsWorld.setGravity(new Vector3(0, -10, 0));
         
         contactListener = new MyContactListener();
-
-        instances = new Array<GameObject>();
-
-		constructors.insert(0, "character", new GameObject.Constructor(model, "character",  new btCapsuleShape(.5f, 4f), 1f));
-		character = constructors.get("character").construct();
-		character.transform.trn(0, 3.5f, 0);
-		characterTransform = character.transform; // Set by reference
-		//instances.add(character);
+        
+        staticObjects.put("target", new GameObject.Constructor(model, "target", new btCylinderShape(new Vector3(2.5f, 0.5f, 2.5f)), 0));
+        
+        GameObject target = staticObjects.get("target").construct();
+        instances.add(target);
+        target.transform.trn(50, 10, 0);
+        target.transform.rotate(0, 0, 1, 90);
+        target.body.proceedToTransform(target.transform);
+        target.body.setUserValue(instances.size);
+        dynamicsWorld.addRigidBody(target.body);
+        
+		staticObjects.put("character", new GameObject.Constructor(model, "character",  new btCapsuleShape(5f, 10f), 1f));
+		character = staticObjects.get("character").construct();
+		character.transform.trn(0, 8f, 0);
+		characterTransform = character.transform;
+		instances.add(character);
 		
 		// Create the physics representation of the character
 		ghostObject = new btPairCachingGhostObject();
 		ghostObject.setWorldTransform(characterTransform);
-		ghostShape = new btCapsuleShape(.5f, 4f);
+		ghostShape = new btCapsuleShape(5f, 10f);
 		ghostObject.setCollisionShape(ghostShape);
 		ghostObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_CHARACTER_OBJECT);
 		//dynamicsWorld.addCollisionObject(ghostObject);
-
+		
+		
 		camController.characterTransform = characterTransform;
 
         assets = new AssetManager();
@@ -310,6 +327,10 @@ public class Main implements ApplicationListener {
 		crosshair.setPosition( Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, Align.center);
 		
 		stage.addActor(crosshair);
+		
+		
+        
+        score = 0;
 	}
 	
 	private void doneLoading () {
@@ -455,13 +476,12 @@ public class Main implements ApplicationListener {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         modelBatch.begin(cam);
-        visibleCount = 0;
         modelBatch.render(instances, environment);
         modelBatch.end();
         
         stringBuilder.setLength(0);
         stringBuilder.append(" FPS: ").append(Gdx.graphics.getFramesPerSecond());
-        stringBuilder.append(" Visible: ").append(visibleCount);
+        stringBuilder.append(" Score: ").append(score);
         label.setText(stringBuilder);
         stage.draw();
         
