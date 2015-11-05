@@ -103,7 +103,7 @@ public class Main implements ApplicationListener {
             body = new btRigidBody(constructionInfo);
             body.setMotionState(motionState);
             body.setRestitution(0.6f);
-            body.setRollingFriction(100);
+            //body.setRollingFriction(100);
             this.doRender = true;
         }
 		
@@ -471,6 +471,7 @@ public class Main implements ApplicationListener {
 		bullet.body.proceedToTransform(bullet.transform);
 		bullet.body.setUserValue(instances.size);
 		bullet.body.setCollisionFlags(bullet.body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+		bullet.body.setRollingFriction(100);
         
 		((btRigidBody)bullet.body).applyCentralImpulse(ray.direction.scl(power));
 		dynamicsWorld.addRigidBody(bullet.body);
@@ -507,7 +508,7 @@ public class Main implements ApplicationListener {
 		dynamicsWorld.stepSimulation(delta, 5, 1f/60f);
 		
         if ((spawnTimer -= delta) < 0) {
-            //spawn();
+            spawn();
             spawnTimer = 0.5f;
         }
         
@@ -567,7 +568,7 @@ public class Main implements ApplicationListener {
 	
 	public void spawn() {
 		GameObject obj = constructors.values[MathUtils.random(constructors.size - 1)].construct();
-         
+
 		obj.transform.setFromEulerAngles(MathUtils.random(360f), MathUtils.random(360f), MathUtils.random(360f));
         obj.transform.trn(MathUtils.random(-90.0f, 90.0f), 50f, MathUtils.random(-90.0f, 90.0f));
         obj.body.proceedToTransform(obj.transform);
