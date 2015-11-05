@@ -13,7 +13,7 @@ allprojects {
 
     version = '1.0'
     ext {
-        appName = 'Archer'
+        appName = 'HjaltiLeifsson_JohannBjarkason_hjaltil13_johannob01_Assignment5'
         gdxVersion = '1.6.4'
         roboVMVersion = '1.5.0'
         box2DLightsVersion = '1.4'
