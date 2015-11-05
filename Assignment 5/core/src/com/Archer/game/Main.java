@@ -82,9 +82,11 @@ public class Main implements ApplicationListener {
 				
 				System.out.println(colObj0.getUserIndex());
 				target.doRender = false;
-				score++;
+				targetsHit++;
+				if(targetsHit < 5) {
+					spawnTarget();
+				}
 				
-				spawnTarget();
 			}
 		  }
     }
@@ -186,7 +188,13 @@ public class Main implements ApplicationListener {
 	
 	int score;
 	
+	int targetsHit;
+	
 	boolean paused;
+	
+	float timeLeft;
+	
+	boolean level1Finished;
     
     
 	@Override
@@ -194,6 +202,11 @@ public class Main implements ApplicationListener {
 		Bullet.init();
 		
 		paused = true;
+		targetsHit = 0;
+		
+		timeLeft = 0.5f * 60;
+		
+		level1Finished = false;
         
 		// Set 2D stage for 2D UI
 		stage = new Stage();
@@ -203,11 +216,12 @@ public class Main implements ApplicationListener {
         infoText = new Label("Welcome to my physics simulator."
         					+ " \n Use the mouse to look around,"
 			        		+ " \n WASD keys to move around,"
-			        		+ " \n and the left mouse button to shoot."
+			        		+ " \n and the left mouse button to shoot.\n "
+			        		+ " \n Shoot five the targets within the allotted time."
 			        		+ " \n Press SpaceBar to start the game",
 			        		new Label.LabelStyle(font, Color.WHITE));
         
-        infoText.setPosition(Gdx.graphics.getWidth()/2 - infoText.getWidth() / 2, Gdx.graphics.getHeight() / 2 + Gdx.graphics.getHeight() / 4);
+        infoText.setPosition(Gdx.graphics.getWidth()/2 - infoText.getWidth() / 2, Gdx.graphics.getHeight() / 2 + Gdx.graphics.getHeight() / 6);
         
         stage.addActor(label);
         stage.addActor(infoText);
@@ -280,9 +294,9 @@ public class Main implements ApplicationListener {
         staticObjects = new ArrayMap<String, GameObject.Constructor>(String.class, GameObject.Constructor.class);
         constructors = new ArrayMap<String, GameObject.Constructor>(String.class, GameObject.Constructor.class);
         constructors.put("sphere", new GameObject.Constructor(model, "sphere", new btSphereShape(0.5f), 1f));
-        constructors.put("box", new GameObject.Constructor(model, "box", new btBoxShape(new Vector3(1.25f, 1.25f, 1.25f)), 10f));
-        constructors.put("cone", new GameObject.Constructor(model, "cone", new btConeShape(0.5f, 2f), 10f));
-        constructors.put("capsule", new GameObject.Constructor(model, "capsule", new btCapsuleShape(.5f, 1f), 10f));
+        constructors.put("box", new GameObject.Constructor(model, "box", new btBoxShape(new Vector3(1.25f, 1.25f, 1.25f)), 1f));
+        constructors.put("cone", new GameObject.Constructor(model, "cone", new btConeShape(0.5f, 2f), 1f));
+        constructors.put("capsule", new GameObject.Constructor(model, "capsule", new btCapsuleShape(.5f, 1f), 1f));
 
         collisionConfig = new btDefaultCollisionConfiguration();
         dispatcher = new btCollisionDispatcher(collisionConfig);
@@ -290,7 +304,7 @@ public class Main implements ApplicationListener {
         constraintSolver = new btSequentialImpulseConstraintSolver();
         
         dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
-        dynamicsWorld.setGravity(new Vector3(0, -20, 0));
+        dynamicsWorld.setGravity(new Vector3(0, -10, 0));
         
         contactListener = new MyContactListener();
         
@@ -320,7 +334,7 @@ public class Main implements ApplicationListener {
         loading = true;
         
         // Setup cross hair
-        int w = Gdx.graphics.getWidth() / 60;
+        int w = Gdx.graphics.getWidth() / 50;
 		int h = Gdx.graphics.getHeight() / 50;
 		
 		Pixmap pix = new Pixmap(w, h, Pixmap.Format.RGBA8888);
@@ -446,7 +460,6 @@ public class Main implements ApplicationListener {
 	}
 	
 	public void shoot(float x, float y, float power) {
-		System.out.println("Shooting!");
 		Ray ray = cam.getPickRay(x, y);
 		
 		GameObject bullet = constructors.get("sphere").construct();
@@ -475,11 +488,24 @@ public class Main implements ApplicationListener {
         
 		final float delta = Math.min(1f/30f, Gdx.graphics.getDeltaTime());
 		
+		timeLeft -= delta;
+		
+		//int minutes = ((int)timeLeft) / 60;
+	    int seconds = ((int)timeLeft) % 60;
+	    
+	    if(seconds <= 0 || targetsHit >= 5) {
+	    	seconds = 0;
+    		// Next level, give score
+    		if(!level1Finished) {
+    			score += 1000;
+    		}
+    		level1Finished = true;
+	    }
+	    
 		dynamicsWorld.stepSimulation(delta, 5, 1f/60f);
 		
         if ((spawnTimer -= delta) < 0) {
             //spawn();
-        	//spawnTarget();
             spawnTimer = 0.5f;
         }
         
@@ -502,6 +528,7 @@ public class Main implements ApplicationListener {
         stringBuilder.setLength(0);
         stringBuilder.append(" FPS: ").append(Gdx.graphics.getFramesPerSecond());
         stringBuilder.append(" Score: ").append(score);
+        stringBuilder.append(" Time: ").append(seconds);
         label.setText(stringBuilder);
         stage.draw();
         
@@ -517,6 +544,7 @@ public class Main implements ApplicationListener {
 				paused = !paused;
 			} else {
 				infoText.setText("Paused!");
+				infoText.setPosition(Gdx.graphics.getWidth()/2 - infoText.getWidth() / 2, Gdx.graphics.getHeight() / 2 + Gdx.graphics.getHeight() / 4);
 				Gdx.input.setInputProcessor(null);
 				paused = !paused;
 			}
@@ -525,7 +553,7 @@ public class Main implements ApplicationListener {
 		
 		if(!paused) {
 			if(Gdx.input.justTouched()) {
-				shoot(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 50);
+				shoot(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 60);
 			}
 		}
 	}
@@ -551,7 +579,7 @@ public class Main implements ApplicationListener {
 	public void spawnTarget() {
 		GameObject target = staticObjects.get("target").construct();
 		
-        target.transform.trn(50, MathUtils.random(10.0f, 25.0f), MathUtils.random(-20.0f, 20.0f));
+        target.transform.trn(MathUtils.random(100.0f, 50.0f), MathUtils.random(10.0f, 25.0f), MathUtils.random(-20.0f, 20.0f));
         target.transform.rotate(0, 0, 1, 90);
         target.body.proceedToTransform(target.transform);
         target.body.setUserValue(1337);
