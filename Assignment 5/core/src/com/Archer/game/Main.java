@@ -332,7 +332,7 @@ public class Main implements ApplicationListener {
 		camController.characterTransform = characterTransform;
 
         assets = new AssetManager();
-        assets.load("scene.g3dj", Model.class);
+        assets.load("shack.g3dj", Model.class);
         loading = true;
         
         // Setup cross hair
@@ -361,7 +361,7 @@ public class Main implements ApplicationListener {
 	}
 	
 	private void doneLoading () {
-		Model landscape = assets.get("scene.g3dj", Model.class);
+		Model landscape = assets.get("shack.g3dj", Model.class);
         
 		for (int i = 0; i < landscape.nodes.size; i++) {
 			String id = landscape.nodes.get(i).id;
@@ -371,7 +371,7 @@ public class Main implements ApplicationListener {
 			float y = landscape.nodes.get(i).scale.z;
 			
 			if(id.equals("Grid")) {
-				staticObjects.put(id, new GameObject.Constructor(landscape, id, new btBoxShape(new Vector3(x, y / 2, z)),  0f));
+				staticObjects.put(id, new GameObject.Constructor(landscape, id, new btBoxShape(new Vector3(x, y / 50, z)),  0f));
 				GameObject gridObject = staticObjects.get(id).construct();
 		        instances.add(gridObject);
 		        dynamicsWorld.addRigidBody(gridObject.body);
@@ -397,7 +397,7 @@ public class Main implements ApplicationListener {
 				GameObject roofObject = staticObjects.get(id).construct();
 		        instances.add(roofObject);
 		        
-		        roofObject.transform.trn(0, 0.1f, 0);
+		        roofObject.transform.trn(0, 0.1f, -8.5f);
 		        roofObject.body.proceedToTransform(roofObject.transform);
 		        
 			}
@@ -499,10 +499,10 @@ public class Main implements ApplicationListener {
 	    if(seconds <= 0 || targetsHit >= targetsToHit) {
 	    	seconds = 0;
     		// Next level, give score
-    		if(!level1Finished) {
+    		if(!level1Finished && targetsHit >= targetsToHit ) {
     			score += 1000;
+    			level1Finished = true;
     		}
-    		level1Finished = true;
 	    }
 	    
 		dynamicsWorld.stepSimulation(delta, 5, 1f/60f);
