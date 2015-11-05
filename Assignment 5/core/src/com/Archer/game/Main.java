@@ -83,7 +83,7 @@ public class Main implements ApplicationListener {
 				System.out.println(colObj0.getUserIndex());
 				target.doRender = false;
 				targetsHit++;
-				if(targetsHit < 5) {
+				if(targetsHit < targetsToHit) {
 					spawnTarget();
 				}
 				
@@ -189,6 +189,7 @@ public class Main implements ApplicationListener {
 	int score;
 	
 	int targetsHit;
+	int targetsToHit;
 	
 	boolean paused;
 	
@@ -203,6 +204,7 @@ public class Main implements ApplicationListener {
 		
 		paused = true;
 		targetsHit = 0;
+		targetsToHit = 5;
 		
 		timeLeft = 0.5f * 60;
 		
@@ -493,7 +495,7 @@ public class Main implements ApplicationListener {
 		//int minutes = ((int)timeLeft) / 60;
 	    int seconds = ((int)timeLeft) % 60;
 	    
-	    if(seconds <= 0 || targetsHit >= 5) {
+	    if(seconds <= 0 || targetsHit >= targetsToHit) {
 	    	seconds = 0;
     		// Next level, give score
     		if(!level1Finished) {
